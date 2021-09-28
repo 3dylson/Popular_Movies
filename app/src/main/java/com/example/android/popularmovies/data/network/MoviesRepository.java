@@ -8,7 +8,10 @@ import java.util.List;
 
 public class MoviesRepository {
 
-    private MovieDao movieDao;
+    // For Singleton instantiation
+    private static final Object LOCK = new Object();
+    private static MoviesRepository INSTANCE;
+    private final MovieDao movieDao;
     private List<MoviePersisted> movies;
 
 
@@ -16,15 +19,25 @@ public class MoviesRepository {
         this.movieDao = movieDao;
     }
 
+    public synchronized static MoviesRepository getInstance(MovieDao movieDao) {
+        if (INSTANCE == null) {
+            synchronized (LOCK) {
+                INSTANCE = new MoviesRepository(movieDao);
+            }
+        }
+        return INSTANCE;
+    }
 
-    private void getMovies() {
+
+    public List<MoviePersisted> getMovies() {
         PopMoviesDatabase
                 .databaseWriteExecutor
                 .execute(() -> onLoaded(movieDao.getMovies()));
+        return this.movies;
     }
 
     private void onLoaded(List<MoviePersisted> movies) {
-        this.movies = movies;
+        this.movies=movies;
     }
 
 
