@@ -16,11 +16,9 @@ import retrofit2.http.Headers;
 
 public interface MovieAPI {
 
-    @Headers("api_key: " + API_KEY)
     @GET(POPULAR)
     Call<MovieResponse> getPopularMoviesList();
 
-    @Headers("api_key: " + API_KEY)
     @GET(TOP_RATED)
     Call<MovieResponse> getTopRatedMoviesList();
 }

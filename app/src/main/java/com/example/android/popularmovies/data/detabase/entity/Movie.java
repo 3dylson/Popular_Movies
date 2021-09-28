@@ -33,7 +33,7 @@ public class Movie {
     @Json(name = "video")
     private boolean video;
     @Json(name = "vote_average")
-    private int voteAverage;
+    private double voteAverage;
     @Json(name = "vote_count")
     private int voteCount;
 
@@ -60,7 +60,7 @@ public class Movie {
         return releaseDate;
     }
 
-    public int getVoteAverage() {
+    public double getVoteAverage() {
         return voteAverage;
     }
 

@@ -8,8 +8,8 @@ final class ServerValues {
     static final String API_KEY = BuildConfig.API_KEY;
 
     // Endpoints
-    static final String POPULAR = "popular";
-    static final String TOP_RATED = "top_rated";
+    static final String POPULAR = "popular?api_key=" + API_KEY;
+    static final String TOP_RATED = "top_rated?api_key=" + API_KEY;
 
 
 

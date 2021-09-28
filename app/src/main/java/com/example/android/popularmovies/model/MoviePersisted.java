@@ -43,4 +43,28 @@ public class MoviePersisted {
     public int getVoteAverage() {
         return voteAverage;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setOriginalTitle(String originalTitle) {
+        this.originalTitle = originalTitle;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public void setPosterPath(String posterPath) {
+        this.posterPath = posterPath;
+    }
+
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public void setVoteAverage(int voteAverage) {
+        this.voteAverage = voteAverage;
+    }
 }

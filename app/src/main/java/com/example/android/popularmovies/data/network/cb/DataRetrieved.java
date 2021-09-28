@@ -4,7 +4,7 @@ import com.example.android.popularmovies.data.network.responsemodel.MovieRespons
 
 public interface DataRetrieved {
 
-    void onDataFetchedSuccess(MovieResponse movies);
+    void onDataFetchedSuccess(MovieResponse response);
 
     void onDataFetchedFailed();
 }
