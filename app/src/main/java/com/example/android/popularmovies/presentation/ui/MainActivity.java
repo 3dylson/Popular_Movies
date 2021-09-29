@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         });
         recyclerView.setAdapter(moviesAdapter);
 
+        // TODO save instance to load right filter on screen rotation
         viewModel.loadPopMovies();
 
     }
