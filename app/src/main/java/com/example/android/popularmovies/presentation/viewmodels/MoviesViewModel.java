@@ -59,7 +59,7 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
 
     @Override
     public void onDataFetchedSuccess(MovieResponse response) {
-        Log.d(TAG, "onDataFetched Success | "+ response.getMovies().size() +" new movies");
+        Log.d(TAG, "onDataFetched Success | "+ response.getTotalResults() +" new movies");
         moviesLoaded = response.getMovies();
         moviesLiveData.postValue(moviesLoaded);
 
@@ -67,7 +67,7 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
 
     @Override
     public void onDataFetchedFailed() {
-
+        //TODO pass empty list
     }
     //@RequiresApi(api = Build.VERSION_CODES.N)
 

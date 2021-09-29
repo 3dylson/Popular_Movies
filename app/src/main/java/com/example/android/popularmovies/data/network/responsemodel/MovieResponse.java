@@ -19,4 +19,8 @@ public class MovieResponse {
     public List<Movie> getMovies() {
         return movies;
     }
+
+    public int getTotalResults() {
+        return totalResults;
+    }
 }
