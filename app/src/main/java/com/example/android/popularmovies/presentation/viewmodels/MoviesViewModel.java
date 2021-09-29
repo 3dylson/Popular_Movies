@@ -27,6 +27,7 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
     private final MoviesRepository repository;
     private MutableLiveData<List<Movie>> moviesLiveData = new MutableLiveData<>();
     private List<Movie> moviesLoaded;
+    private Boolean filterPopMovieFlag = true;
 
     public MoviesViewModel(@NonNull Application application) {
         super(application);
@@ -39,10 +40,21 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
         return moviesLiveData;
     }
 
-    public void loadMovies() {
+    public Boolean getFilterPopMovieFlag() {
+        return filterPopMovieFlag;
+    }
+
+    public void setFilterPopMovieFlag(Boolean filterPopMovieFlag) {
+        this.filterPopMovieFlag = filterPopMovieFlag;
+    }
+
+    public void loadPopMovies() {
         RetrofitClient.getListOfPopularMovies(this);
     }
 
+    public void loadTopRatedMovies() {
+        RetrofitClient.getListOfTopRatedMovies(this);
+    }
 
 
     @Override
