@@ -1,8 +1,12 @@
 package com.example.android.popularmovies.presentation.ui;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -46,12 +50,41 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         });
         recyclerView.setAdapter(moviesAdapter);
 
-        viewModel.loadMovies();
+        viewModel.loadPopMovies();
 
     }
 
     @Override
     public void onItemClick(Movie movie) {
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.movies_filter,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.top_rated) {
+            if (viewModel.getFilterPopMovieFlag()) {
+                viewModel.loadTopRatedMovies();
+                viewModel.setFilterPopMovieFlag(false);
+            }
+            return true;
+        }
+
+        if (id == R.id.pop_movies) {
+            if (!viewModel.getFilterPopMovieFlag()) {
+                viewModel.loadPopMovies();
+                viewModel.setFilterPopMovieFlag(true);
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
