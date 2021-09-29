@@ -1,5 +1,6 @@
 package com.example.android.popularmovies.presentation.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +18,7 @@ import com.example.android.popularmovies.data.detabase.entity.Movie;
 import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
+import com.squareup.moshi.Moshi;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnItemClickHandler {
 
@@ -54,9 +56,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     }
 
+
     @Override
     public void onItemClick(Movie movie) {
-
+        Intent movieDetailIntent = new Intent(MainActivity.this,DetailsActivity.class);
+        movieDetailIntent.putExtra(DetailsActivity.EXTRA_MOVIE,movie);
+        startActivity(movieDetailIntent);
     }
 
     @Override
