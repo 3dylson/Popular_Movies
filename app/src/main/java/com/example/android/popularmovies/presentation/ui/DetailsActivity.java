@@ -1,22 +1,37 @@
 package com.example.android.popularmovies.presentation.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.detabase.entity.Movie;
+import com.example.android.popularmovies.data.detabase.entity.Trailer;
+import com.example.android.popularmovies.data.network.RetrofitClient;
+import com.example.android.popularmovies.data.network.cb.TrailerRetrieved;
+import com.example.android.popularmovies.data.network.responsemodel.TrailerResponse;
 import com.example.android.popularmovies.databinding.ActivityDetailsBinding;
+import com.example.android.popularmovies.presentation.adapters.TrailersAdapter;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
-public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class DetailsActivity extends AppCompatActivity implements View.OnClickListener,
+        TrailersAdapter.TrailerAdapterOnItemClickHandler, TrailerRetrieved {
 
     public static final String EXTRA_MOVIE = "extra_movie";
     private final String BASE_IMAGE_PATH = "http://image.tmdb.org/t/p/original";
     private ActivityDetailsBinding binding;
+    private TrailersAdapter trailersAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,10 +42,19 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         binding.topDetailsAppBar.setNavigationOnClickListener(this);
 
+        LinearLayoutManager trailerLayoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false);
+        binding.trailersRv.setLayoutManager(trailerLayoutManager);
+        binding.trailersRv.setHasFixedSize(true);
+
+        trailersAdapter = new TrailersAdapter(this);
+        binding.trailersRv.setAdapter(trailersAdapter);
+
         Movie movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
 
         //TODO Fix action bar contrast
         bindMovieToUI(movie);
+        RetrofitClient.getListOfMovieTrailer( this,String.valueOf(movie.getId()));
     }
 
     private void bindMovieToUI(Movie movie) {
@@ -55,8 +79,28 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+
     @Override
     public void onClick(View v) {
         onBackPressed();
+    }
+
+    @Override
+    public void onItemClick(Trailer trailer) {
+        Intent playTrailerIntent = new Intent(Intent.ACTION_VIEW);
+        playTrailerIntent.setData(Uri.parse("https://www.youtube.com/watch?v="+trailer.getKey()));
+        startActivity(playTrailerIntent);
+
+    }
+
+    @Override
+    public void onTrailerFetchedSuccess(TrailerResponse response) {
+        trailersAdapter.submitList(response.getTrailers());
+
+    }
+
+    @Override
+    public void onTrailerFetchedFailed() {
+        trailersAdapter.submitList(Collections.emptyList());
     }
 }

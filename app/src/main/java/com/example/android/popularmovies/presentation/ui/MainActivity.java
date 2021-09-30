@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.presentation.ui;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,9 +36,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         recyclerView = findViewById(R.id.rv_movies);
         progressBar = findViewById(R.id.pb_loading_indicator);
 
-        GridLayoutManager layoutManager
-                = new GridLayoutManager(getApplicationContext(),3);
-        recyclerView.setLayoutManager(layoutManager);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // landscape
+            GridLayoutManager layoutManager
+                    = new GridLayoutManager(getApplicationContext(),6);
+            recyclerView.setLayoutManager(layoutManager);
+
+        } else {
+            // portrait
+            GridLayoutManager layoutManager
+                    = new GridLayoutManager(getApplicationContext(),3);
+            recyclerView.setLayoutManager(layoutManager);
+        }
+
         recyclerView.setHasFixedSize(true);
 
         moviesAdapter = new MoviesAdapter(this);
@@ -52,7 +63,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         });
         recyclerView.setAdapter(moviesAdapter);
 
-        viewModel.loadPopMovies();
+        if (viewModel.getFilterPopMovieFlag()){
+            viewModel.loadPopMovies();
+        } else {
+            viewModel.loadTopRatedMovies();
+            //TODO change checked filter
+        }
 
     }
 
@@ -77,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         if (id == R.id.top_rated) {
             if (viewModel.getFilterPopMovieFlag()) {
+                item.setChecked(true);
                 viewModel.loadTopRatedMovies();
                 viewModel.setFilterPopMovieFlag(false);
             }
@@ -85,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         if (id == R.id.pop_movies) {
             if (!viewModel.getFilterPopMovieFlag()) {
+                item.setChecked(true);
                 viewModel.loadPopMovies();
                 viewModel.setFilterPopMovieFlag(true);
             }

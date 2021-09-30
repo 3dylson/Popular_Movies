@@ -10,6 +10,7 @@ final class ServerValues {
     // Endpoints
     static final String POPULAR = "popular?api_key=" + API_KEY;
     static final String TOP_RATED = "top_rated?api_key=" + API_KEY;
+    static final String MOVIE_TRAILERS = "{movie_id}/videos?api_key=" + API_KEY;
 
 
 

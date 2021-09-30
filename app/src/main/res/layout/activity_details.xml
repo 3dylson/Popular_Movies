@@ -19,6 +19,7 @@
             app:expandedTitleMarginStart="72dp"
             app:expandedTitleMarginBottom="28dp"
             android:fitsSystemWindows="true"
+            app:maxLines="2"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:contentScrim="?attr/colorPrimary"
             app:statusBarScrim="?attr/colorPrimaryVariant"
@@ -117,6 +118,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_overview_label" />
+
+            <TextView
+                android:id="@+id/tv_trailers_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/trailers"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/movie_overview" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/trailers_rv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_trailers_label"
+                tools:listitem="@layout/trailers_list_item" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
