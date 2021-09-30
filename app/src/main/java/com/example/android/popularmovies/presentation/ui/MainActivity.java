@@ -52,8 +52,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         });
         recyclerView.setAdapter(moviesAdapter);
 
-        // TODO save instance to load right filter on screen rotation
-        viewModel.loadPopMovies();
+        if (viewModel.getFilterPopMovieFlag()){
+            viewModel.loadPopMovies();
+        } else {
+            viewModel.loadTopRatedMovies();
+            //TODO change checked filter
+        }
 
     }
 
@@ -78,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         if (id == R.id.top_rated) {
             if (viewModel.getFilterPopMovieFlag()) {
+                item.setChecked(true);
                 viewModel.loadTopRatedMovies();
                 viewModel.setFilterPopMovieFlag(false);
             }
@@ -86,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         if (id == R.id.pop_movies) {
             if (!viewModel.getFilterPopMovieFlag()) {
+                item.setChecked(true);
                 viewModel.loadPopMovies();
                 viewModel.setFilterPopMovieFlag(true);
             }
