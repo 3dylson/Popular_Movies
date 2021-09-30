@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.presentation.ui;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,9 +36,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         recyclerView = findViewById(R.id.rv_movies);
         progressBar = findViewById(R.id.pb_loading_indicator);
 
-        GridLayoutManager layoutManager
-                = new GridLayoutManager(getApplicationContext(),3);
-        recyclerView.setLayoutManager(layoutManager);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // landscape
+            GridLayoutManager layoutManager
+                    = new GridLayoutManager(getApplicationContext(),6);
+            recyclerView.setLayoutManager(layoutManager);
+
+        } else {
+            // portrait
+            GridLayoutManager layoutManager
+                    = new GridLayoutManager(getApplicationContext(),3);
+            recyclerView.setLayoutManager(layoutManager);
+        }
+
         recyclerView.setHasFixedSize(true);
 
         moviesAdapter = new MoviesAdapter(this);
