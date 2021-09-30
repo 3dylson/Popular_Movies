@@ -18,6 +18,7 @@ import com.example.android.popularmovies.data.network.cb.DataRetrieved;
 import com.example.android.popularmovies.data.network.responsemodel.MovieResponse;
 import com.example.android.popularmovies.model.MoviePersisted;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
@@ -67,7 +68,7 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
 
     @Override
     public void onDataFetchedFailed() {
-        //TODO pass empty list
+        moviesLiveData.postValue(Collections.emptyList());
     }
     //@RequiresApi(api = Build.VERSION_CODES.N)
 

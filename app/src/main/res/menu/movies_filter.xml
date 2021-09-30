@@ -7,15 +7,21 @@
         android:title="@string/filter_label"
         app:showAsAction="always">
         <menu>
+            <group
+                android:id="@+id/menu_sort_group"
+                android:checkableBehavior="single">
 
             <item
                 android:id="@+id/top_rated"
                 android:orderInCategory="1"
+                android:checked="true"
                 android:title="@string/top_rated_action"/>
             <item
                 android:id="@+id/pop_movies"
                 android:orderInCategory="2"
                 android:title="@string/popularity_action"/>
+
+            </group>
 
         </menu>
 

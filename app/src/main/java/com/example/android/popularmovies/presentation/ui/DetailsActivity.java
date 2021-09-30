@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 
@@ -17,6 +20,9 @@ import com.example.android.popularmovies.data.network.responsemodel.TrailerRespo
 import com.example.android.popularmovies.databinding.ActivityDetailsBinding;
 import com.example.android.popularmovies.presentation.adapters.TrailersAdapter;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener,
@@ -37,7 +43,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         binding.topDetailsAppBar.setNavigationOnClickListener(this);
 
         LinearLayoutManager trailerLayoutManager
-                = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false);
         binding.trailersRv.setLayoutManager(trailerLayoutManager);
         binding.trailersRv.setHasFixedSize(true);
 
@@ -73,6 +79,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+
     @Override
     public void onClick(View v) {
         onBackPressed();
@@ -80,6 +87,9 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onItemClick(Trailer trailer) {
+        Intent playTrailerIntent = new Intent(Intent.ACTION_VIEW);
+        playTrailerIntent.setData(Uri.parse("https://www.youtube.com/watch?v="+trailer.getKey()));
+        startActivity(playTrailerIntent);
 
     }
 
@@ -91,6 +101,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onTrailerFetchedFailed() {
-
+        trailersAdapter.submitList(Collections.emptyList());
     }
 }
