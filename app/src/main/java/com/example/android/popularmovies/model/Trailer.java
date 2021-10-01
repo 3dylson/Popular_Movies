@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.data.detabase.entity;
+package com.example.android.popularmovies.model;
 
 import com.squareup.moshi.Json;
 

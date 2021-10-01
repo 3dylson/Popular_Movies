@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.model;
+package com.example.android.popularmovies.data.detabase.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;

@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.data.detabase.entity;
+package com.example.android.popularmovies.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -40,6 +40,7 @@ public class Movie implements Parcelable {
     @Json(name = "vote_count")
     private int voteCount;
 
+    // Omit fields that shouldn’t be included in JSON
     @Transient
     private boolean fav = false;
 

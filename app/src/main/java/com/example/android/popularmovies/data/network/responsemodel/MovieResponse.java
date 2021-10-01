@@ -1,6 +1,6 @@
 package com.example.android.popularmovies.data.network.responsemodel;
 
-import com.example.android.popularmovies.data.detabase.entity.Movie;
+import com.example.android.popularmovies.model.Movie;
 import com.squareup.moshi.Json;
 
 import java.util.List;
