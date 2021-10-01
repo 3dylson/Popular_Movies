@@ -8,7 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.android.popularmovies.data.detabase.dao.MovieDao;
-import com.example.android.popularmovies.model.MoviePersisted;
+import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

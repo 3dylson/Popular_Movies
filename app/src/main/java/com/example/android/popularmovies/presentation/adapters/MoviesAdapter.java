@@ -14,14 +14,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.data.detabase.entity.Movie;
-import com.example.android.popularmovies.model.MoviePersisted;
-
-import java.util.List;
+import com.example.android.popularmovies.model.Movie;
 
 public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHolder> {
 
-    private final String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
     //private List<Movie> movies;
     private final MoviesAdapterOnItemClickHandler clickHandler;
 
@@ -60,8 +56,9 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
         if (currentMovie.getPosterPath() != null) {
             imageUrl = currentMovie.getPosterPath();
         }
+        String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
         Glide.with(holder.itemView.getContext())
-                .load(BASE_POSTER_PATH+imageUrl)
+                .load(BASE_POSTER_PATH +imageUrl)
                 .fallback(R.drawable.ic_baseline_broken_image_24)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter()

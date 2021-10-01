@@ -3,7 +3,7 @@ package com.example.android.popularmovies.data.detabase.dao;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.example.android.popularmovies.model.MoviePersisted;
+import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 
 import java.util.List;
 
