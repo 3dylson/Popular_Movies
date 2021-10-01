@@ -5,8 +5,10 @@ import static com.example.android.popularmovies.data.network.ServerValues.BASE_U
 import android.util.Log;
 
 import com.example.android.popularmovies.data.network.cb.DataRetrieved;
+import com.example.android.popularmovies.data.network.cb.ReviewRetrieved;
 import com.example.android.popularmovies.data.network.cb.TrailerRetrieved;
 import com.example.android.popularmovies.data.network.responsemodel.MovieResponse;
+import com.example.android.popularmovies.data.network.responsemodel.ReviewResponse;
 import com.example.android.popularmovies.data.network.responsemodel.TrailerResponse;
 
 import okhttp3.OkHttpClient;
@@ -83,6 +85,27 @@ public class RetrofitClient {
                     public void onFailure(Call<TrailerResponse> call, Throwable t) {
                         Log.e(TAG, "Unable to get trailers. Error: " + t.getMessage());
                         listener.onTrailerFetchedFailed();
+                    }
+                });
+    }
+
+    public static void getListOfMovieReviews(ReviewRetrieved listener, String movieID) {
+        apiMovie()
+                .getMovieReviews(movieID)
+                .enqueue(new Callback<ReviewResponse>() {
+                    @Override
+                    public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                        if (!response.isSuccessful()) {
+                            Log.d(TAG, "code: " + response.code());
+                            return;
+                        }
+                        listener.onReviewFetchedSuccess(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<ReviewResponse> call, Throwable t) {
+                        Log.e(TAG, "Unable to get reviews. Error: " + t.getMessage());
+                        listener.onReviewFetchedFailed();
                     }
                 });
     }
