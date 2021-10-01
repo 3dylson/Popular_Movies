@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.data.detabase.entity.Trailer;
+import com.example.android.popularmovies.model.Trailer;
 
 public class TrailersAdapter extends ListAdapter<Trailer, TrailersAdapter.TrailerViewHolder> {
 
@@ -55,7 +55,6 @@ public class TrailersAdapter extends ListAdapter<Trailer, TrailersAdapter.Traile
         Glide.with(holder.itemView.getContext())
                 .load(YOUTUBE_URL +currentTrailer.getKey()+"/0.jpg")
                 .fallback(R.drawable.ic_baseline_broken_image_24)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .fitCenter()
                 .into(holder.videoThumb);
         holder.trailerTitle.setText(currentTrailer.getName());

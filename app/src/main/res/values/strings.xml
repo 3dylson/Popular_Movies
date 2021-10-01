@@ -6,4 +6,5 @@
     <string name="favorite_action">Favorite</string>
     <string name="about_this_movie_label">About this movie</string>
     <string name="trailers">Trailers</string>
+    <string name="reviews_label">Reviews</string>
 </resources>
