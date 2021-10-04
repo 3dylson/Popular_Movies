@@ -11,7 +11,7 @@ public class AuthorDetails {
     @Json(name = "avatar_path")
     public String avatarPath;
     @Json(name = "rating")
-    public int rating = 0;
+    public String rating;
 
     public String getName() {
         return name;
@@ -25,7 +25,7 @@ public class AuthorDetails {
         return avatarPath;
     }
 
-    public int getRating() {
+    public String getRating() {
         return rating;
     }
 }
