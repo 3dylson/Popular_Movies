@@ -16,7 +16,7 @@ public interface MovieDao {
 
 
     @Query("SELECT * FROM Movie")
-    LiveData<List<MoviePersisted>> getMovies();
+    List<MoviePersisted> getMovies();
 
     @Insert(onConflict = IGNORE)
     void insert(MoviePersisted persistedMovie);

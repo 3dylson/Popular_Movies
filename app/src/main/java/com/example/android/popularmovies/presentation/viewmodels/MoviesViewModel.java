@@ -5,31 +5,38 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
+import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.data.network.MoviesRepository;
 import com.example.android.popularmovies.data.network.RetrofitClient;
 import com.example.android.popularmovies.data.network.cb.DataRetrieved;
 import com.example.android.popularmovies.data.network.responsemodel.MovieResponse;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
 
     private static final String TAG = MoviesViewModel.class.getSimpleName();
 
     private final MoviesRepository repository;
+    private PopMoviesDatabase database;
     private MutableLiveData<List<Movie>> moviesLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> favMoviesLiveData = new MutableLiveData<>();
     private List<Movie> moviesLoaded;
-    private Boolean filterPopMovieFlag = true;
+    private MutableLiveData<String> listFilterFlag = new MutableLiveData<>();
 
     public MoviesViewModel(@NonNull Application application) {
         super(application);
-        PopMoviesDatabase database = PopMoviesDatabase.getInstance(application);
+        database = PopMoviesDatabase.getInstance(application);
         repository = MoviesRepository.getInstance(database.movieDao());
+        listFilterFlag.postValue("popular");
     }
 
 
@@ -37,12 +44,8 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
         return moviesLiveData;
     }
 
-    public Boolean getFilterPopMovieFlag() {
-        return filterPopMovieFlag;
-    }
-
-    public void setFilterPopMovieFlag(Boolean filterPopMovieFlag) {
-        this.filterPopMovieFlag = filterPopMovieFlag;
+    public LiveData<String> getListFilterFlag() {
+        return listFilterFlag;
     }
 
     public void loadPopMovies() {
@@ -51,6 +54,36 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
 
     public void loadTopRatedMovies() {
         RetrofitClient.getListOfTopRatedMovies(this);
+    }
+
+    public void loadMyFav() {
+        AtomicReference<List<MoviePersisted>> favMovies = new AtomicReference<>();
+
+        PopMoviesDatabase
+                .databaseWriteExecutor
+                .execute(()-> {
+                    List<Movie> convertedMovies = new ArrayList<>();
+                    favMovies.set(repository.getMovies());
+                    favMovies.get().forEach(moviePersisted -> {
+                        Movie movie = new Movie(
+                                moviePersisted.getBackdropPath(),
+                                moviePersisted.getId(),
+                                moviePersisted.getOriginalTitle(),
+                                moviePersisted.getOverview(),
+                                moviePersisted.getPosterPath(),
+                                moviePersisted.getReleaseDate(),
+                                moviePersisted.getVoteAverage(),
+                                true
+                        );
+                        convertedMovies.add(movie);
+                    });
+                    moviesLoaded = convertedMovies;
+                    moviesLiveData.postValue(moviesLoaded);
+                });
+    }
+
+    public void setListFilterFlag(String value){
+        listFilterFlag.postValue(value);
     }
 
 

@@ -45,7 +45,7 @@ public class MoviesRepository {
         return removeResult;
     }
 
-    public LiveData<List<MoviePersisted>> getMovies() {
+    public List<MoviePersisted> getMovies() {
         return movieDao.getMovies();
     }
 

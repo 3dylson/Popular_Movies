@@ -18,9 +18,14 @@
                     android:title="@string/popularity_action"/>
 
                 <item
-                android:id="@+id/top_rated"
-                android:orderInCategory="2"
-                android:title="@string/top_rated_action"/>
+                    android:id="@+id/top_rated"
+                    android:orderInCategory="2"
+                    android:title="@string/top_rated_action"/>
+
+                <item
+                    android:id="@+id/myFav"
+                    android:orderInCategory="3"
+                    android:title="@string/my_favorites_label"/>
 
             </group>
 

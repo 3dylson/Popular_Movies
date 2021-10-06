@@ -7,4 +7,5 @@
     <string name="about_this_movie_label">About this movie</string>
     <string name="trailers">Trailers</string>
     <string name="reviews_label">Reviews</string>
+    <string name="my_favorites_label">My Favorites</string>
 </resources>
