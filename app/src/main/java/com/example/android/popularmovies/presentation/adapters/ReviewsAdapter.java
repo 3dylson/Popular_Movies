@@ -60,7 +60,7 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
             rating = Double.parseDouble(authorRate);
         }
 
-        if (rating <= 2) {
+        if (rating >= 1 && rating <= 2) {
             rateStar = 1;
         }
         if (rating >= 3 && rating <= 4 ) {

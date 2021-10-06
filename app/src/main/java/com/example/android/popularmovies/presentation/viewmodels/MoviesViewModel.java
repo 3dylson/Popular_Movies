@@ -66,14 +66,5 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
     public void onDataFetchedFailed() {
         moviesLiveData.postValue(Collections.emptyList());
     }
-    //@RequiresApi(api = Build.VERSION_CODES.N)
 
-    /*private void updateMovies() {
-        List<MoviePersisted> movies = repository.getMovies();
-        *//*movies.forEach(movie -> {
-            int moviesIDs
-        });*//*
-        moviesLiveData.postValue(movies);
-
-    }*/
 }

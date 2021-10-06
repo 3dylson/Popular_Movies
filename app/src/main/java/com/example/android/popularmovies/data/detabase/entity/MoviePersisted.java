@@ -9,6 +9,8 @@ public class MoviePersisted {
 
     @PrimaryKey()
     private int id;
+    @ColumnInfo(name = "backdrop_path")
+    private String backdropPath;
     @ColumnInfo(name = "original_title")
     private String originalTitle;
     @ColumnInfo(name = "overview")
@@ -18,7 +20,17 @@ public class MoviePersisted {
     @ColumnInfo(name = "release_date")
     private String releaseDate;
     @ColumnInfo(name = "vote_average")
-    private int voteAverage;
+    private double voteAverage;
+
+    public MoviePersisted(int id, String backdropPath, String originalTitle, String overview, String posterPath, String releaseDate, double voteAverage) {
+        this.id = id;
+        this.backdropPath = backdropPath;
+        this.originalTitle = originalTitle;
+        this.overview = overview;
+        this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
+        this.voteAverage = voteAverage;
+    }
 
     public int getId() {
         return id;
@@ -40,8 +52,20 @@ public class MoviePersisted {
         return releaseDate;
     }
 
-    public int getVoteAverage() {
+    public double getVoteAverage() {
         return voteAverage;
+    }
+
+    public String getBackdropPath() {
+        return backdropPath;
+    }
+
+    public void setBackdropPath(String backdropPath) {
+        this.backdropPath = backdropPath;
+    }
+
+    public void setVoteAverage(double voteAverage) {
+        this.voteAverage = voteAverage;
     }
 
     public void setId(int id) {
@@ -64,7 +88,4 @@ public class MoviePersisted {
         this.releaseDate = releaseDate;
     }
 
-    public void setVoteAverage(int voteAverage) {
-        this.voteAverage = voteAverage;
-    }
 }

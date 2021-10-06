@@ -25,4 +25,8 @@ public class ReviewResponse {
     public List<Review> getReviews() {
         return reviews;
     }
+
+    public int getTotalResults() {
+        return totalResults;
+    }
 }

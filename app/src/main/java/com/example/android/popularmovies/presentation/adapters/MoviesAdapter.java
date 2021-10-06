@@ -50,7 +50,6 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MoviesViewHolder holder, int position) {
-        //Movie currentMovie = movies.get(position);
         Movie currentMovie = getItem(position);
         String imageUrl = null;
         if (currentMovie.getPosterPath() != null) {
