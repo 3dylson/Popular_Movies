@@ -20,12 +20,18 @@ import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnItemClickHandler {
 
     private MoviesViewModel viewModel;
     private RecyclerView recyclerView;
     private MoviesAdapter moviesAdapter;
     private ProgressBar progressBar;
+    private MenuItem popMovieItem;
+    private MenuItem topRatedItem;
+    private MenuItem favItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,13 +68,40 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         });
         recyclerView.setAdapter(moviesAdapter);
 
-        if (viewModel.getFilterPopMovieFlag()){
+
+        loadContent();
+
+        /*if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")){
             viewModel.loadPopMovies();
         } else {
             viewModel.loadTopRatedMovies();
             //TODO change checked filter
-        }
+        }*/
 
+    }
+
+    private void loadContent() {
+        viewModel.getListFilterFlag().observe(this, string -> {
+            if (string.equals("popular")) {
+                viewModel.loadPopMovies();
+            }
+            if (string.equals("top_rated")) {
+                viewModel.loadTopRatedMovies();
+                uncheckItemMenu();
+                topRatedItem.setChecked(true);
+            }
+            if (string.equals("my_fav")) {
+                viewModel.loadMyFav();
+                uncheckItemMenu();
+                favItem.setChecked(true);
+            }
+        });
+    }
+
+    private void uncheckItemMenu() {
+        popMovieItem.setChecked(false);
+        topRatedItem.setChecked(false);
+        favItem.setChecked(false);
     }
 
 
@@ -83,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.movies_filter,menu);
+        popMovieItem = menu.findItem(R.id.pop_movies);
+        topRatedItem = menu.findItem(R.id.top_rated);
+        favItem = menu.findItem(R.id.myFav);
         return true;
     }
 
@@ -91,20 +127,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         int id = item.getItemId();
 
         if (id == R.id.top_rated) {
-            if (viewModel.getFilterPopMovieFlag()) {
-                item.setChecked(true);
-                viewModel.loadTopRatedMovies();
-                viewModel.setFilterPopMovieFlag(false);
-            }
+            viewModel.setListFilterFlag("top_rated");
             return true;
         }
 
         if (id == R.id.pop_movies) {
-            if (!viewModel.getFilterPopMovieFlag()) {
-                item.setChecked(true);
-                viewModel.loadPopMovies();
-                viewModel.setFilterPopMovieFlag(true);
-            }
+            uncheckItemMenu();
+            item.setChecked(true);
+            viewModel.setListFilterFlag("popular");
+            return true;
+        }
+
+        if (id == R.id.myFav) {
+            viewModel.setListFilterFlag("my_fav");
             return true;
         }
         return super.onOptionsItemSelected(item);

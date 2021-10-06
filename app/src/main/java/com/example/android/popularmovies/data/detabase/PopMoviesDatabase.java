@@ -38,8 +38,8 @@ public abstract class PopMoviesDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    // The associated DAOs for the database
+    // The associated DAO for the database
     public abstract MovieDao movieDao();
 
-    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(2);
+    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(3);
 }

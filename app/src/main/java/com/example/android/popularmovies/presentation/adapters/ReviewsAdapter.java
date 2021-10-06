@@ -53,20 +53,26 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
         String authorName = "Anonymous";
 
         int rateStar = 0;
-        int authorRate = currentReview.getAuthorDetails().getRating();
-        if (authorRate <= 2) {
+        String authorRate = currentReview.getAuthorDetails().getRating();
+        double rating = 0.0;
+
+        if (authorRate != null) {
+            rating = Double.parseDouble(authorRate);
+        }
+
+        if (rating >= 1 && rating <= 2) {
             rateStar = 1;
         }
-        if (authorRate >= 3 && authorRate <= 4 ) {
+        if (rating >= 3 && rating <= 4 ) {
             rateStar = 2;
         }
-        if (authorRate >= 5 && authorRate <= 6 ) {
+        if (rating >= 5 && rating <= 6 ) {
             rateStar = 3;
         }
-        if (authorRate >= 7 && authorRate <= 8 ) {
+        if (rating >= 7 && rating <= 8 ) {
             rateStar = 4;
         }
-        if (authorRate >= 9 && authorRate <= 10 ) {
+        if (rating >= 9 && rating <= 10 ) {
             rateStar = 5;
         }
 

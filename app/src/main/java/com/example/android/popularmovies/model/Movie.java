@@ -44,6 +44,17 @@ public class Movie implements Parcelable {
     @Transient
     private boolean fav = false;
 
+    public Movie(String backdropPath, int id, String originalTitle, String overview, String posterPath, String releaseDate, double voteAverage, boolean fav) {
+        this.backdropPath = backdropPath;
+        this.id = id;
+        this.originalTitle = originalTitle;
+        this.overview = overview;
+        this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
+        this.voteAverage = voteAverage;
+        this.fav = fav;
+    }
+
     protected Movie(Parcel in) {
         adult = in.readByte() != 0;
         backdropPath = in.readString();
@@ -107,6 +118,10 @@ public class Movie implements Parcelable {
 
     public boolean isFav() {
         return fav;
+    }
+
+    public void setFav(boolean fav) {
+        this.fav = fav;
     }
 
     @Override
