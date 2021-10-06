@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.presentation.ui;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,11 +15,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.data.detabase.entity.Movie;
+import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
-import com.squareup.moshi.Moshi;
+
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnItemClickHandler {
 
@@ -26,6 +28,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private RecyclerView recyclerView;
     private MoviesAdapter moviesAdapter;
     private ProgressBar progressBar;
+    private MenuItem popMovieItem;
+    private MenuItem topRatedItem;
+    private MenuItem favItem;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +41,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         recyclerView = findViewById(R.id.rv_movies);
         progressBar = findViewById(R.id.pb_loading_indicator);
 
-        GridLayoutManager layoutManager
-                = new GridLayoutManager(getApplicationContext(),3);
-        recyclerView.setLayoutManager(layoutManager);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // landscape
+            GridLayoutManager layoutManager
+                    = new GridLayoutManager(getApplicationContext(),6);
+            recyclerView.setLayoutManager(layoutManager);
+
+        } else {
+            // portrait
+            GridLayoutManager layoutManager
+                    = new GridLayoutManager(getApplicationContext(),3);
+            recyclerView.setLayoutManager(layoutManager);
+        }
+
         recyclerView.setHasFixedSize(true);
 
         moviesAdapter = new MoviesAdapter(this);
@@ -52,8 +68,40 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         });
         recyclerView.setAdapter(moviesAdapter);
 
-        viewModel.loadPopMovies();
 
+        loadContent();
+
+        /*if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")){
+            viewModel.loadPopMovies();
+        } else {
+            viewModel.loadTopRatedMovies();
+            //TODO change checked filter
+        }*/
+
+    }
+
+    private void loadContent() {
+        viewModel.getListFilterFlag().observe(this, string -> {
+            if (string.equals("popular")) {
+                viewModel.loadPopMovies();
+            }
+            if (string.equals("top_rated")) {
+                viewModel.loadTopRatedMovies();
+                uncheckItemMenu();
+                topRatedItem.setChecked(true);
+            }
+            if (string.equals("my_fav")) {
+                viewModel.loadMyFav();
+                uncheckItemMenu();
+                favItem.setChecked(true);
+            }
+        });
+    }
+
+    private void uncheckItemMenu() {
+        popMovieItem.setChecked(false);
+        topRatedItem.setChecked(false);
+        favItem.setChecked(false);
     }
 
 
@@ -68,6 +116,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.movies_filter,menu);
+        popMovieItem = menu.findItem(R.id.pop_movies);
+        topRatedItem = menu.findItem(R.id.top_rated);
+        favItem = menu.findItem(R.id.myFav);
         return true;
     }
 
@@ -76,18 +127,19 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         int id = item.getItemId();
 
         if (id == R.id.top_rated) {
-            if (viewModel.getFilterPopMovieFlag()) {
-                viewModel.loadTopRatedMovies();
-                viewModel.setFilterPopMovieFlag(false);
-            }
+            viewModel.setListFilterFlag("top_rated");
             return true;
         }
 
         if (id == R.id.pop_movies) {
-            if (!viewModel.getFilterPopMovieFlag()) {
-                viewModel.loadPopMovies();
-                viewModel.setFilterPopMovieFlag(true);
-            }
+            uncheckItemMenu();
+            item.setChecked(true);
+            viewModel.setListFilterFlag("popular");
+            return true;
+        }
+
+        if (id == R.id.myFav) {
+            viewModel.setListFilterFlag("my_fav");
             return true;
         }
         return super.onOptionsItemSelected(item);

@@ -8,7 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.example.android.popularmovies.data.detabase.dao.MovieDao;
-import com.example.android.popularmovies.model.MoviePersisted;
+import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -38,8 +38,8 @@ public abstract class PopMoviesDatabase extends RoomDatabase {
         return INSTANCE;
     }
 
-    // The associated DAOs for the database
+    // The associated DAO for the database
     public abstract MovieDao movieDao();
 
-    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(2);
+    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(3);
 }
