@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         viewModel.getListFilterFlag().observe(this, string -> {
             if (string.equals("popular")) {
                 viewModel.loadPopMovies();
-                popMovieItem.setChecked(true);
             }
             if (string.equals("top_rated")) {
                 viewModel.loadTopRatedMovies();
@@ -134,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         if (id == R.id.pop_movies) {
             uncheckItemMenu();
+            item.setChecked(true);
             viewModel.setListFilterFlag("popular");
             return true;
         }
