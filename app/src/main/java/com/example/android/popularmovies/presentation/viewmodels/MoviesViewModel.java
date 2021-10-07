@@ -29,7 +29,7 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
     private PopMoviesDatabase database;
     private MutableLiveData<List<Movie>> moviesLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Movie>> favMoviesLiveData = new MutableLiveData<>();
-    private List<Movie> moviesLoaded;
+    private List<Movie> moviesLoaded = new ArrayList<>();
     private MutableLiveData<String> listFilterFlag = new MutableLiveData<>();
 
     public MoviesViewModel(@NonNull Application application) {
@@ -48,12 +48,12 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
         return listFilterFlag;
     }
 
-    public void loadPopMovies() {
-        RetrofitClient.getListOfPopularMovies(this);
+    public void loadPopMovies(String page) {
+        RetrofitClient.getListOfPopularMovies(this,page);
     }
 
-    public void loadTopRatedMovies() {
-        RetrofitClient.getListOfTopRatedMovies(this);
+    public void loadTopRatedMovies(String page) {
+        RetrofitClient.getListOfTopRatedMovies(this, page);
     }
 
     public void loadMyFav() {
@@ -90,7 +90,12 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
     @Override
     public void onDataFetchedSuccess(MovieResponse response) {
         Log.d(TAG, "onDataFetched Success | "+ response.getTotalResults() +" new movies");
-        moviesLoaded = response.getMovies();
+        if (moviesLoaded.isEmpty()) {
+            moviesLoaded = response.getMovies();
+        }
+        else {
+            moviesLoaded.addAll(response.getMovies());
+        }
         moviesLiveData.postValue(moviesLoaded);
 
     }

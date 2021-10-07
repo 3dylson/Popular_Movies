@@ -24,9 +24,9 @@ public class RetrofitClient {
     private static final String TAG = RetrofitClient.class.getSimpleName();
 
 
-    public static void getListOfPopularMovies(DataRetrieved listener) {
+    public static void getListOfPopularMovies(DataRetrieved listener, String page) {
         apiMovie()
-                .getPopularMoviesList()
+                .getPopularMoviesList(page)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
@@ -46,9 +46,9 @@ public class RetrofitClient {
     }
 
 
-    public static void getListOfTopRatedMovies(DataRetrieved listener) {
+    public static void getListOfTopRatedMovies(DataRetrieved listener, String page) {
         apiMovie()
-                .getTopRatedMoviesList()
+                .getTopRatedMoviesList(page)
                 .enqueue(new Callback<MovieResponse>() {
                     @Override
                     public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
