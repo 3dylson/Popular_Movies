@@ -19,6 +19,7 @@ import com.example.android.popularmovies.data.network.responsemodel.MovieRespons
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
@@ -28,8 +29,11 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
     private final MoviesRepository repository;
     private PopMoviesDatabase database;
     private MutableLiveData<List<Movie>> moviesLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<Movie>> favMoviesLiveData = new MutableLiveData<>();
-    private List<Movie> moviesLoaded = new ArrayList<>();
+    private List<Movie> popularMoviesLoaded = new ArrayList<>();
+    private int popPage = 1;
+    private int topRatedPage = 1;
+    private List<Movie> topRatedMoviesLoaded = new ArrayList<>();
+    private List<Movie> favMoviesLoaded = new ArrayList<>();
     private MutableLiveData<String> listFilterFlag = new MutableLiveData<>();
 
     public MoviesViewModel(@NonNull Application application) {
@@ -39,6 +43,13 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
         listFilterFlag.postValue("popular");
     }
 
+    public int getPopPage() {
+        return popPage;
+    }
+
+    public int getTopRatedPage() {
+        return topRatedPage;
+    }
 
     public MutableLiveData<List<Movie>> getMoviesLiveData() {
         return moviesLiveData;
@@ -77,8 +88,8 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
                         );
                         convertedMovies.add(movie);
                     });
-                    moviesLoaded = convertedMovies;
-                    moviesLiveData.postValue(moviesLoaded);
+                    favMoviesLoaded = convertedMovies;
+                    moviesLiveData.postValue(favMoviesLoaded);
                 });
     }
 
@@ -89,15 +100,29 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
 
     @Override
     public void onDataFetchedSuccess(MovieResponse response) {
-        Log.d(TAG, "onDataFetched Success | "+ response.getTotalResults() +" new movies");
-        if (moviesLoaded.isEmpty()) {
-            moviesLoaded = response.getMovies();
+        Log.d(TAG, "onDataFetched Success | "+ response.getMovies().size() +" new movies");
+        List<Movie> moviesLoaded = new ArrayList<>();
+        if (Objects.equals(listFilterFlag.getValue(), "popular")) {
+            if (popularMoviesLoaded.isEmpty()) {
+                popularMoviesLoaded = response.getMovies();
+            }
+            else {
+                popularMoviesLoaded.addAll(response.getMovies());
+            }
+            popPage++;
+            moviesLoaded = popularMoviesLoaded;
         }
-        else {
-            moviesLoaded.addAll(response.getMovies());
-        }
-        moviesLiveData.postValue(moviesLoaded);
-
+       if (Objects.equals(listFilterFlag.getValue(), "top_rated")) {
+           if (topRatedMoviesLoaded.isEmpty()) {
+               topRatedMoviesLoaded = response.getMovies();
+           }
+           else {
+               topRatedMoviesLoaded.addAll(response.getMovies());
+           }
+           topRatedPage++;
+           moviesLoaded = topRatedMoviesLoaded;
+       }
+       moviesLiveData.postValue(moviesLoaded);
     }
 
     @Override

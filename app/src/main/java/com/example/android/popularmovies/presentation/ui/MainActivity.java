@@ -3,6 +3,7 @@ package com.example.android.popularmovies.presentation.ui;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,10 +23,12 @@ import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnItemClickHandler {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private MoviesViewModel viewModel;
     private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private MenuItem popMovieItem;
     private MenuItem topRatedItem;
     private MenuItem favItem;
+    private boolean hasReachedEnd = false;
     private int scrollPosition = 0;
     private int PAGE = 1;
     private int rvPosition = RecyclerView.NO_POSITION;
@@ -59,10 +63,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                     = new GridLayoutManager(getApplicationContext(),3);
         }
         recyclerView.setLayoutManager(layoutManager);
-
         recyclerView.setHasFixedSize(true);
 
         moviesAdapter = new MoviesAdapter(this);
+        moviesAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                //recyclerView.smoothScrollToPosition(scrollPosition);
+            }
+        });
 
         MoviesViewModelFactory factory = new MoviesViewModelFactory(this.getApplication());
         viewModel = new ViewModelProvider(this,factory).get(MoviesViewModel.class);
@@ -70,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         viewModel.getMoviesLiveData().observe(this,movies -> {
             moviesAdapter.submitList(movies);
-            recyclerView.smoothScrollToPosition(scrollPosition);
+            scrollPosition = moviesAdapter.getItemCount();
+            //recyclerView.smoothScrollToPosition(scrollPosition);
             /*if (rvPosition == RecyclerView.NO_POSITION) rvPosition = 0;
             recyclerView.smoothScrollToPosition(rvPosition);*/
 
@@ -80,12 +92,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         loadContent();
         scrollListener();
 
-        /*if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")){
-            viewModel.loadPopMovies();
-        } else {
-            viewModel.loadTopRatedMovies();
-            //TODO change checked filter
-        }*/
 
     }
 
@@ -95,12 +101,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (!recyclerView.canScrollVertically(1)) {
-                    scrollPosition = layoutManager.findLastVisibleItemPosition();
+                if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == moviesAdapter.getItemCount() - 1 && !hasReachedEnd) {
+                    Log.d(TAG,"Start loading");
                     if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")) {
+                        int page = viewModel.getPopPage();
+                        viewModel.loadPopMovies(String.valueOf(page));
+                    }
+                    if (Objects.equals(viewModel.getListFilterFlag().getValue(), "top_rated")) {
                         PAGE++;
-                        viewModel.loadPopMovies(String.valueOf(PAGE));
-                        //layoutManager.scrollToPosition(scrollPosition);
+                        viewModel.loadTopRatedMovies(String.valueOf(PAGE));
                     }
                 }
             }
@@ -110,10 +119,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private void loadContent() {
         viewModel.getListFilterFlag().observe(this, string -> {
             if (string.equals("popular")) {
-                viewModel.loadPopMovies("1");
+                int page = viewModel.getPopPage();
+                viewModel.loadPopMovies(String.valueOf(page));
             }
             if (string.equals("top_rated")) {
-                viewModel.loadTopRatedMovies("1");
+                int page = viewModel.getTopRatedPage();
+                viewModel.loadTopRatedMovies(String.valueOf(page));
                 uncheckItemMenu();
                 topRatedItem.setChecked(true);
             }
