@@ -55,7 +55,7 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
         if (currentMovie.getPosterPath() != null) {
             imageUrl = currentMovie.getPosterPath();
         }
-        String BASE_POSTER_PATH = "http://image.tmdb.org/t/p/w185";
+        String BASE_POSTER_PATH = "https://image.tmdb.org/t/p/w185";
         Glide.with(holder.itemView.getContext())
                 .load(BASE_POSTER_PATH +imageUrl)
                 .fallback(R.drawable.ic_baseline_broken_image_24)

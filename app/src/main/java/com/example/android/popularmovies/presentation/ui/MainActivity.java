@@ -3,6 +3,7 @@ package com.example.android.popularmovies.presentation.ui;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,10 +23,12 @@ import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnItemClickHandler {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private MoviesViewModel viewModel;
     private RecyclerView recyclerView;
     private GridLayoutManager layoutManager;
@@ -34,8 +37,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     private MenuItem popMovieItem;
     private MenuItem topRatedItem;
     private MenuItem favItem;
+    private final ArrayList<Movie> movieArrayList = new ArrayList<>();
     private int scrollPosition = 0;
-    private int PAGE = 1;
+    private int PAGE = 2;
     private int rvPosition = RecyclerView.NO_POSITION;
 
 
@@ -59,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                     = new GridLayoutManager(getApplicationContext(),3);
         }
         recyclerView.setLayoutManager(layoutManager);
-
         recyclerView.setHasFixedSize(true);
 
         moviesAdapter = new MoviesAdapter(this);
@@ -69,14 +72,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
 
         viewModel.getMoviesLiveData().observe(this,movies -> {
+            movieArrayList.addAll(movies);
             moviesAdapter.submitList(movies);
-            recyclerView.smoothScrollToPosition(scrollPosition);
+            //recyclerView.smoothScrollToPosition(scrollPosition);
             /*if (rvPosition == RecyclerView.NO_POSITION) rvPosition = 0;
             recyclerView.smoothScrollToPosition(rvPosition);*/
 
         });
         recyclerView.setAdapter(moviesAdapter);
-
         loadContent();
         scrollListener();
 
@@ -95,8 +98,9 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (!recyclerView.canScrollVertically(1)) {
-                    scrollPosition = layoutManager.findLastVisibleItemPosition();
+                if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == movieArrayList.size() - 3) {
+                    Log.d(TAG,"Start loading");
+                   // scrollPosition = layoutManager.findLastVisibleItemPosition();
                     if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")) {
                         PAGE++;
                         viewModel.loadPopMovies(String.valueOf(PAGE));

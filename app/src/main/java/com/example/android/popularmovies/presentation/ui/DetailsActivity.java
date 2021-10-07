@@ -69,6 +69,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         binding.rvReviews.setLayoutManager(reviewLayoutManager);
         binding.rvReviews.setHasFixedSize(true);
+        binding.rvReviews.setNestedScrollingEnabled(true);
 
         trailersAdapter = new TrailersAdapter(this);
         reviewsAdapter = new ReviewsAdapter(this);
@@ -110,7 +111,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         if (movie.getBackdropPath() != null) {
             backDropUrl = movie.getBackdropPath();
         }
-        String BASE_IMAGE_PATH = "http://image.tmdb.org/t/p/original";
+        String BASE_IMAGE_PATH = "https://image.tmdb.org/t/p/original";
         Glide.with(getApplicationContext())
                 .load(BASE_IMAGE_PATH +backDropUrl)
                 .fallback(R.drawable.ic_baseline_broken_image_24)

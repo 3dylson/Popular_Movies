@@ -4,7 +4,7 @@ import com.example.android.popularmovies.BuildConfig;
 
 final class ServerValues {
 
-    static final String BASE_URL = "http://api.themoviedb.org/3/movie/";
+    static final String BASE_URL = "https://api.themoviedb.org/3/movie/";
     static final String API_KEY = BuildConfig.API_KEY;
 
     // Endpoints

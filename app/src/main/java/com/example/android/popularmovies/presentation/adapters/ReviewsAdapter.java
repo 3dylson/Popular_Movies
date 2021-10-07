@@ -81,7 +81,7 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
         }
         holder.authorName.setText(authorName);
 
-        String AVATAR_PATH = "http://image.tmdb.org/t/p/w185";
+        String AVATAR_PATH = "https://image.tmdb.org/t/p/w185";
         String avatarpath = currentReview.getAuthorDetails().getAvatarPath();
 
         if (avatarpath != null && !avatarpath.startsWith("/https")){
