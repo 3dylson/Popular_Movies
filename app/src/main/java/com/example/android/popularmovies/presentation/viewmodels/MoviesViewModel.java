@@ -40,7 +40,7 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
         super(application);
         database = PopMoviesDatabase.getInstance(application);
         repository = MoviesRepository.getInstance(database.movieDao());
-        listFilterFlag.postValue("popular");
+        listFilterFlag.setValue("popular");
     }
 
     public int getPopPage() {

@@ -80,8 +80,13 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
 
         viewModel.getMoviesLiveData().observe(this,movies -> {
-            moviesAdapter.submitList(movies);
+            showLoading();
+            if (movies != null && movies.size() != 0) {
+                moviesAdapter.submitList(movies);
+                showData();
+            }
             scrollPosition = moviesAdapter.getItemCount();
+
             //recyclerView.smoothScrollToPosition(scrollPosition);
             /*if (rvPosition == RecyclerView.NO_POSITION) rvPosition = 0;
             recyclerView.smoothScrollToPosition(rvPosition);*/
@@ -95,6 +100,16 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     }
 
+    private void showData() {
+        progressBar.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoading() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
     private void scrollListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -103,13 +118,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
                 if (layoutManager != null && layoutManager.findLastCompletelyVisibleItemPosition() == moviesAdapter.getItemCount() - 1 && !hasReachedEnd) {
                     Log.d(TAG,"Start loading");
+                    recyclerView.setVisibility(View.INVISIBLE);
                     if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")) {
                         int page = viewModel.getPopPage();
                         viewModel.loadPopMovies(String.valueOf(page));
                     }
                     if (Objects.equals(viewModel.getListFilterFlag().getValue(), "top_rated")) {
-                        PAGE++;
-                        viewModel.loadTopRatedMovies(String.valueOf(PAGE));
+                        int page = viewModel.getTopRatedPage();
+                        viewModel.loadTopRatedMovies(String.valueOf(page));
                     }
                 }
             }
@@ -123,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 viewModel.loadPopMovies(String.valueOf(page));
             }
             if (string.equals("top_rated")) {
+                showLoading();
                 int page = viewModel.getTopRatedPage();
                 viewModel.loadTopRatedMovies(String.valueOf(page));
                 uncheckItemMenu();
