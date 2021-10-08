@@ -10,6 +10,7 @@ import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 import com.example.android.popularmovies.data.network.MovieAPI;
 import com.example.android.popularmovies.data.network.MoviesRepository;
 import com.example.android.popularmovies.data.network.RetrofitClient;
+import com.example.android.popularmovies.data.detabase.FavoriteAction;
 import com.example.android.popularmovies.model.Movie;
 
 public class DetailsViewModel extends AndroidViewModel {
@@ -23,17 +24,17 @@ public class DetailsViewModel extends AndroidViewModel {
         repository = MoviesRepository.getInstance(database.movieDao(), movieAPI);
     }
 
-    public void favMovie(Movie movie) {
+    public void favMovie(Movie movie, FavoriteAction result) {
         MoviePersisted persistedMovie = movieToPersistedMovie(movie);
-        repository.addFavMovie(persistedMovie);
+        repository.addFavMovie(persistedMovie,result);
     }
 
-    public void favMoviePersisted(MoviePersisted movie) {
-        repository.addFavMovie(movie);
+    public void favMoviePersisted(MoviePersisted movie, FavoriteAction result) {
+        repository.addFavMovie(movie,result);
     }
 
-    public void unFavMovie(int id) {
-        repository.deleteFavMovie(String.valueOf(id));
+    public void unFavMovie(int id, FavoriteAction result) {
+        repository.deleteFavMovie(String.valueOf(id),result);
     }
 
     private MoviePersisted movieToPersistedMovie(Movie movie) {
@@ -47,6 +48,5 @@ public class DetailsViewModel extends AndroidViewModel {
                 movie.getVoteAverage()
         );
     }
-
 
 }

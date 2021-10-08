@@ -10,4 +10,7 @@
     <string name="my_favorites_label">My Favorites</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="your_favorite_list_is_empty_label">Your Favorite list is empty!</string>
+    <string name="no_trailers_found_label">No trailers found</string>
+    <string name="no_reviews_yet_label">No reviews yet</string>
 </resources>

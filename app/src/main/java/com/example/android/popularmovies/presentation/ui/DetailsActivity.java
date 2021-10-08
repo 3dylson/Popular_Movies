@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.data.detabase.FavoriteAction;
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 import com.example.android.popularmovies.data.network.cb.ReviewRetrieved;
@@ -35,7 +37,7 @@ import java.util.Collections;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener,
         Toolbar.OnMenuItemClickListener,
         TrailersAdapter.TrailerAdapterOnItemClickHandler, ReviewsAdapter.ReviewAdapterOnItemClickHandler,
-        TrailerRetrieved, ReviewRetrieved {
+        TrailerRetrieved, ReviewRetrieved, FavoriteAction {
 
     public static final String EXTRA_MOVIE = "extra_movie";
     private DetailsViewModel viewModel;
@@ -153,7 +155,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     .fallback(R.drawable.ic_baseline_broken_image_24)
                     .fitCenter()
                     .into(binding.movieThumbnail);
-            binding.relesdeDateLabel.setText(movie.getReleaseDate());
+            binding.releaseDateLabel.setText(movie.getReleaseDate());
             binding.tvVoteAverage.setText(movie.getVoteAverage() +"/10");
             binding.movieOverview.setText(movie.getOverview());
         }
@@ -175,7 +177,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                     .fallback(R.drawable.ic_baseline_broken_image_24)
                     .fitCenter()
                     .into(binding.movieThumbnail);
-            binding.relesdeDateLabel.setText(moviePersisted.getReleaseDate());
+            binding.releaseDateLabel.setText(moviePersisted.getReleaseDate());
             binding.tvVoteAverage.setText(moviePersisted.getVoteAverage() +"/10");
             binding.movieOverview.setText(moviePersisted.getOverview());
         }
@@ -198,25 +200,43 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onTrailerFetchedSuccess(TrailerResponse response) {
-        trailersAdapter.submitList(response.getTrailers());
+        if (response.getTrailers().size() > 0) {
+            binding.noTrailers.setVisibility(View.INVISIBLE);
+            binding.trailersRv.setVisibility(View.VISIBLE);
+            trailersAdapter.submitList(response.getTrailers());
+        }
+        else {
+            binding.trailersRv.setVisibility(View.INVISIBLE);
+            binding.noTrailers.setVisibility(View.VISIBLE);
+        }
 
     }
 
     @Override
     public void onTrailerFetchedFailed() {
         trailersAdapter.submitList(Collections.emptyList());
+        binding.trailersRv.setVisibility(View.INVISIBLE);
+        binding.noTrailers.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onReviewFetchedSuccess(ReviewResponse response) {
         if (response.getTotalResults() > 0) {
+            binding.noReviews.setVisibility(View.INVISIBLE);
+            binding.rvReviews.setVisibility(View.VISIBLE);
             reviewsAdapter.submitList(response.getReviews());
+        }
+        else {
+            binding.rvReviews.setVisibility(View.INVISIBLE);
+            binding.noReviews.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onReviewFetchedFailed() {
         reviewsAdapter.submitList(Collections.emptyList());
+        binding.rvReviews.setVisibility(View.INVISIBLE);
+        binding.noReviews.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -241,16 +261,38 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         if (id == R.id.favorite_action) {
             if (isFavorite) {
-                viewModel.unFavMovie(movieID);
+                viewModel.unFavMovie(movieID, this);
                 isFavorite = false;
             }
             else {
                 if (movie != null)
-                viewModel.favMovie(movie);
-                else viewModel.favMoviePersisted(moviePersisted);
+                viewModel.favMovie(movie,this);
+                else viewModel.favMoviePersisted(moviePersisted, this);
             }
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFavAddSuccess() {
+        runOnUiThread(() -> Toast.makeText(getApplication().getApplicationContext(), "Movie added as Favorite", Toast.LENGTH_SHORT).show());
+    }
+
+
+    @Override
+    public void onFavAddFail(String error) {
+        runOnUiThread(() -> Toast.makeText(getApplication().getApplicationContext(), error, Toast.LENGTH_SHORT).show());
+
+    }
+
+    @Override
+    public void onDeleteFavSuccess() {
+        runOnUiThread(() -> Toast.makeText(getApplication().getApplicationContext(), "Movie removed as Favorite", Toast.LENGTH_SHORT).show());
+    }
+
+    @Override
+    public void onDeleteFavFail(String error) {
+        runOnUiThread(() -> Toast.makeText(getApplication().getApplicationContext(), error, Toast.LENGTH_SHORT).show());
     }
 }

@@ -10,6 +10,7 @@ import androidx.paging.PagedList;
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.dao.MovieDao;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
+import com.example.android.popularmovies.data.detabase.FavoriteAction;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.datasources.PopMoviesDataSource;
 import com.example.android.popularmovies.model.datasources.PopMoviesDataSourceFactory;
@@ -96,27 +97,31 @@ public class MoviesRepository {
     }
 
 
-    public void deleteFavMovie(String id) {
+    public void deleteFavMovie(String id, FavoriteAction result) {
         PopMoviesDatabase
                 .databaseWriteExecutor
                 .execute(() -> {
                     try {
                         movieDao.deleteFavMovieById(id);
+                        result.onDeleteFavSuccess();
                         Log.d(TAG,"Movie deleted as Fav");
                     } catch (Exception e) {
+                        result.onDeleteFavFail(e.getMessage());
                         Log.d(TAG,e.getMessage());
                     }
                 });
     }
 
-    public void addFavMovie(MoviePersisted movie) {
+    public void addFavMovie(MoviePersisted movie, FavoriteAction result) {
         PopMoviesDatabase
                 .databaseWriteExecutor
                 .execute(() -> {
                     try {
                         movieDao.insertFavMovie(movie);
+                        result.onFavAddSuccess();
                         Log.d(TAG,"Movie marked as Fav");
                     } catch (Exception e) {
+                        result.onFavAddFail(e.getMessage());
                         Log.d(TAG,e.getMessage());
                     }
                 });

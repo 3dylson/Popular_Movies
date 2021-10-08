@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Movie;
@@ -31,7 +32,7 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     private RecyclerView recyclerView;
     private MoviesAdapter moviesAdapter;
     private ProgressBar progressBar;
-
+    private TextView emptyLabel;
 
 
     public PopMovieFragment() {
@@ -52,11 +53,20 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
 
         recyclerView = requireView().findViewById(R.id.rv_movies);
         progressBar = requireView().findViewById(R.id.pb_loading_indicator);
-
+        emptyLabel = requireView().findViewById(R.id.empty_label);
+        showLoading();
         initRecyclerView();
         setupAdapter();
         loadData();
 
+    }
+
+    public ProgressBar getProgressBar() {
+        return progressBar;
+    }
+
+    public TextView getEmptyLabel() {
+        return emptyLabel;
     }
 
     public RecyclerView getRecyclerView() {
@@ -73,7 +83,15 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
 
 
     public void loadData() {
-        viewModel.getPagedListPopMovie().observe(this.getViewLifecycleOwner(), movies -> moviesAdapter.submitList(movies));
+        viewModel.getPagedListPopMovie().observe(this.getViewLifecycleOwner(), movies -> {
+            if (movies != null) {
+                showData();
+                moviesAdapter.submitList(movies);
+            }
+            else {
+                showLoading();
+            }
+        });
         viewModel.getLoadState().observe(this.getViewLifecycleOwner(), state -> moviesAdapter.setState(state));
     }
 
@@ -81,6 +99,16 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     public void setupAdapter() {
         moviesAdapter = new MoviesAdapter(this);
         recyclerView.setAdapter(moviesAdapter);
+    }
+
+    public void showData() {
+        progressBar.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    public void showLoading() {
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
 
