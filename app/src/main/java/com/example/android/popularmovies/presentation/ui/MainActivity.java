@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.paging.PagedList;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -79,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         viewModel = new ViewModelProvider(this,factory).get(MoviesViewModel.class);
 
 
-        viewModel.getMoviesLiveData().observe(this,movies -> {
-            showLoading();
+        /*viewModel.getMoviesLiveData().observe(this,movies -> {
             if (movies != null && movies.size() != 0) {
                 moviesAdapter.submitList(movies);
                 showData();
@@ -88,14 +89,18 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             scrollPosition = moviesAdapter.getItemCount();
 
             //recyclerView.smoothScrollToPosition(scrollPosition);
-            /*if (rvPosition == RecyclerView.NO_POSITION) rvPosition = 0;
-            recyclerView.smoothScrollToPosition(rvPosition);*/
+            *//*if (rvPosition == RecyclerView.NO_POSITION) rvPosition = 0;
+            recyclerView.smoothScrollToPosition(rvPosition);*//*
 
-        });
+        });*/
         recyclerView.setAdapter(moviesAdapter);
 
-        loadContent();
-        scrollListener();
+        viewModel.getPagedListLiveData().observe(this, movies -> moviesAdapter.submitList(movies));
+
+        viewModel.getLoadState().observe(this, state -> moviesAdapter.setState(state));
+
+        //loadContent();
+        //scrollListener();
 
 
     }

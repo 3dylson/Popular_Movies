@@ -7,14 +7,16 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.PagedList;
 
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
-import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.data.network.MovieAPI;
 import com.example.android.popularmovies.data.network.MoviesRepository;
 import com.example.android.popularmovies.data.network.RetrofitClient;
 import com.example.android.popularmovies.data.network.cb.DataRetrieved;
 import com.example.android.popularmovies.data.network.responsemodel.MovieResponse;
+import com.example.android.popularmovies.model.Movie;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,12 +37,23 @@ public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
     private List<Movie> topRatedMoviesLoaded = new ArrayList<>();
     private List<Movie> favMoviesLoaded = new ArrayList<>();
     private MutableLiveData<String> listFilterFlag = new MutableLiveData<>();
+    private final LiveData<PagedList<Movie>> pagedListLiveData;
 
     public MoviesViewModel(@NonNull Application application) {
         super(application);
+        MovieAPI movieAPI = RetrofitClient.apiMovie();
         database = PopMoviesDatabase.getInstance(application);
-        repository = MoviesRepository.getInstance(database.movieDao());
+        repository = MoviesRepository.getInstance(database.movieDao(), movieAPI);
+        pagedListLiveData = repository.getPagedList();
         listFilterFlag.setValue("popular");
+    }
+
+    public LiveData<PagedList<Movie>> getPagedListLiveData() {
+        return pagedListLiveData;
+    }
+
+    public LiveData<Integer> getLoadState() {
+        return repository.getLoadState();
     }
 
     public int getPopPage() {

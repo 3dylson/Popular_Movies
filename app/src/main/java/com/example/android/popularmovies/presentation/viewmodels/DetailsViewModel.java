@@ -7,7 +7,9 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
+import com.example.android.popularmovies.data.network.MovieAPI;
 import com.example.android.popularmovies.data.network.MoviesRepository;
+import com.example.android.popularmovies.data.network.RetrofitClient;
 import com.example.android.popularmovies.model.Movie;
 
 public class DetailsViewModel extends AndroidViewModel {
@@ -17,8 +19,9 @@ public class DetailsViewModel extends AndroidViewModel {
 
     public DetailsViewModel(@NonNull Application application) {
         super(application);
+        MovieAPI movieAPI = RetrofitClient.apiMovie();
         PopMoviesDatabase database = PopMoviesDatabase.getInstance(application);
-        repository = MoviesRepository.getInstance(database.movieDao());
+        repository = MoviesRepository.getInstance(database.movieDao(), movieAPI);
     }
 
     public void favMovie(Movie movie) {

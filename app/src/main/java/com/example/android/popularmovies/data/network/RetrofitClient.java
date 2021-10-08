@@ -111,7 +111,7 @@ public class RetrofitClient {
     }
 
 
-    static MovieAPI apiMovie() {
+    public static MovieAPI apiMovie() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         HttpLoggingInterceptor.Level bodyLevel = HttpLoggingInterceptor.Level.BODY;
         interceptor.level(bodyLevel);
