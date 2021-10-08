@@ -4,10 +4,8 @@ import static com.example.android.popularmovies.data.network.ServerValues.BASE_U
 
 import android.util.Log;
 
-import com.example.android.popularmovies.data.network.cb.DataRetrieved;
 import com.example.android.popularmovies.data.network.cb.ReviewRetrieved;
 import com.example.android.popularmovies.data.network.cb.TrailerRetrieved;
-import com.example.android.popularmovies.data.network.responsemodel.MovieResponse;
 import com.example.android.popularmovies.data.network.responsemodel.ReviewResponse;
 import com.example.android.popularmovies.data.network.responsemodel.TrailerResponse;
 
@@ -23,49 +21,6 @@ public class RetrofitClient {
 
     private static final String TAG = RetrofitClient.class.getSimpleName();
 
-
-    public static void getListOfPopularMovies(DataRetrieved listener) {
-        apiMovie()
-                .getPopularMoviesList()
-                .enqueue(new Callback<MovieResponse>() {
-                    @Override
-                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if (!response.isSuccessful()) {
-                            Log.d(TAG, "code: " + response.code());
-                            return;
-                        }
-                        listener.onDataFetchedSuccess(response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
-                        Log.e(TAG, "Unable to get popular movies. Error: " + t.getMessage());
-                        listener.onDataFetchedFailed();
-                    }
-                });
-    }
-
-
-    public static void getListOfTopRatedMovies(DataRetrieved listener) {
-        apiMovie()
-                .getTopRatedMoviesList()
-                .enqueue(new Callback<MovieResponse>() {
-                    @Override
-                    public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
-                        if (!response.isSuccessful()) {
-                            Log.d(TAG, "code: " + response.code());
-                            return;
-                        }
-                        listener.onDataFetchedSuccess(response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<MovieResponse> call, Throwable t) {
-                        Log.e(TAG, "Unable to get top rated movies. Error: " + t.getMessage());
-                        listener.onDataFetchedFailed();
-                    }
-                });
-    }
 
 
     public static void getListOfMovieTrailer(TrailerRetrieved listener, String movieID) {
@@ -111,7 +66,7 @@ public class RetrofitClient {
     }
 
 
-    static MovieAPI apiMovie() {
+    public static MovieAPI apiMovie() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         HttpLoggingInterceptor.Level bodyLevel = HttpLoggingInterceptor.Level.BODY;
         interceptor.level(bodyLevel);

@@ -1,7 +1,6 @@
 package com.example.android.popularmovies.presentation.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,6 +45,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     private PopMoviesDatabase moviesDatabase;
 
     private Movie movie;
+    private MoviePersisted moviePersisted;
+    private int movieID;
     private boolean isReviewExpanded = false;
     private boolean isFavorite = false;
 
@@ -57,9 +58,34 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(view);
 
         moviesDatabase = PopMoviesDatabase.getInstance(this.getApplicationContext());
-
         binding.topDetailsAppBar.setNavigationOnClickListener(this);
 
+        initRecyclerView();
+
+        if (getIntent().getParcelableExtra(EXTRA_MOVIE) instanceof Movie)
+        movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
+        else moviePersisted = getIntent().getParcelableExtra(EXTRA_MOVIE);
+
+        initFavCheck();
+        bindMovieToUI();
+
+        binding.topDetailsAppBar.setOnMenuItemClickListener(this::onMenuItemClick);
+
+        apiCallTrailerAndReview();
+    }
+
+    private void apiCallTrailerAndReview() {
+        if (movie != null) {
+            RetrofitClient.getListOfMovieTrailer( this,String.valueOf(movie.getId()));
+            RetrofitClient.getListOfMovieReviews(this,String.valueOf(movie.getId()));
+        }
+        else {
+            RetrofitClient.getListOfMovieTrailer( this,String.valueOf(moviePersisted.getId()));
+            RetrofitClient.getListOfMovieReviews(this,String.valueOf(moviePersisted.getId()));
+        }
+    }
+
+    private void initRecyclerView() {
         LinearLayoutManager trailerLayoutManager
                 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false);
         binding.trailersRv.setLayoutManager(trailerLayoutManager);
@@ -69,6 +95,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 = new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         binding.rvReviews.setLayoutManager(reviewLayoutManager);
         binding.rvReviews.setHasFixedSize(true);
+        binding.rvReviews.setNestedScrollingEnabled(true);
 
         trailersAdapter = new TrailersAdapter(this);
         reviewsAdapter = new ReviewsAdapter(this);
@@ -78,52 +105,80 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         binding.trailersRv.setAdapter(trailersAdapter);
         binding.rvReviews.setAdapter(reviewsAdapter);
-
-        movie = getIntent().getParcelableExtra(EXTRA_MOVIE);
-
-
-        initFavCheck();
-        bindMovieToUI();
-
-        binding.topDetailsAppBar.setOnMenuItemClickListener(this::onMenuItemClick);
-
-        RetrofitClient.getListOfMovieTrailer( this,String.valueOf(movie.getId()));
-        RetrofitClient.getListOfMovieReviews(this,String.valueOf(movie.getId()));
     }
 
     private void initFavCheck() {
 
-        moviesDatabase.movieDao().findPersistedMovieById(String.valueOf(movie.getId())).observe(this, moviePersisted -> {
-            if (moviePersisted != null) {
-                isFavorite = true;
-                binding.topDetailsAppBar.getMenu().findItem(R.id.favorite_action).setIcon(R.drawable.ic_baseline_favorite_24);
-                return;
-            }
-            binding.topDetailsAppBar.getMenu().findItem(R.id.favorite_action).setIcon(R.drawable.ic_baseline_favorite_border_24);
-        });
+        if (movie != null) {
+            moviesDatabase.movieDao().findFavMovieById(String.valueOf(movie.getId())).observe(this, moviePersisted -> {
+                if (moviePersisted != null) {
+                    isFavorite = true;
+                    binding.topDetailsAppBar.getMenu().findItem(R.id.favorite_action).setIcon(R.drawable.ic_baseline_favorite_24);
+                }
+                else {
+                    binding.topDetailsAppBar.getMenu().findItem(R.id.favorite_action).setIcon(R.drawable.ic_baseline_favorite_border_24);
+                }
+            });
 
+        }
+        else {
+            moviesDatabase.movieDao().findFavMovieById(String.valueOf(moviePersisted.getId())).observe(this, moviePersisted -> {
+                if (moviePersisted != null) {
+                    isFavorite = true;
+                    binding.topDetailsAppBar.getMenu().findItem(R.id.favorite_action).setIcon(R.drawable.ic_baseline_favorite_24);
+                }
+                else {
+                    binding.topDetailsAppBar.getMenu().findItem(R.id.favorite_action).setIcon(R.drawable.ic_baseline_favorite_border_24);
+                }
+            });
+        }
     }
 
     private void bindMovieToUI() {
-        binding.topDetailsAppBar.setTitle(movie.getOriginalTitle());
-        String backDropUrl = null;
-        if (movie.getBackdropPath() != null) {
-            backDropUrl = movie.getBackdropPath();
+        if (movie != null) {
+            movieID = movie.getId();
+            binding.topDetailsAppBar.setTitle(movie.getOriginalTitle());
+            String backDropUrl = null;
+            if (movie.getBackdropPath() != null) {
+                backDropUrl = movie.getBackdropPath();
+            }
+            String BASE_IMAGE_PATH = "https://image.tmdb.org/t/p/original";
+            Glide.with(getApplicationContext())
+                    .load(BASE_IMAGE_PATH +backDropUrl)
+                    .fallback(R.drawable.ic_baseline_broken_image_24)
+                    .fitCenter()
+                    .into(binding.ivMovieBackdrop);
+            Glide.with(getApplicationContext())
+                    .load(BASE_IMAGE_PATH +movie.getPosterPath())
+                    .fallback(R.drawable.ic_baseline_broken_image_24)
+                    .fitCenter()
+                    .into(binding.movieThumbnail);
+            binding.relesdeDateLabel.setText(movie.getReleaseDate());
+            binding.tvVoteAverage.setText(movie.getVoteAverage() +"/10");
+            binding.movieOverview.setText(movie.getOverview());
         }
-        String BASE_IMAGE_PATH = "http://image.tmdb.org/t/p/original";
-        Glide.with(getApplicationContext())
-                .load(BASE_IMAGE_PATH +backDropUrl)
-                .fallback(R.drawable.ic_baseline_broken_image_24)
-                .fitCenter()
-                .into(binding.ivMovieBackdrop);
-        Glide.with(getApplicationContext())
-                .load(BASE_IMAGE_PATH +movie.getPosterPath())
-                .fallback(R.drawable.ic_baseline_broken_image_24)
-                .fitCenter()
-                .into(binding.movieThumbnail);
-        binding.relesdeDateLabel.setText(movie.getReleaseDate());
-        binding.tvVoteAverage.setText(movie.getVoteAverage() +"/10");
-        binding.movieOverview.setText(movie.getOverview());
+        else {
+            movieID = moviePersisted.getId();
+            binding.topDetailsAppBar.setTitle(moviePersisted.getOriginalTitle());
+            String backDropUrl = null;
+            if (moviePersisted.getBackdropPath() != null) {
+                backDropUrl = moviePersisted.getBackdropPath();
+            }
+            String BASE_IMAGE_PATH = "https://image.tmdb.org/t/p/original";
+            Glide.with(getApplicationContext())
+                    .load(BASE_IMAGE_PATH +backDropUrl)
+                    .fallback(R.drawable.ic_baseline_broken_image_24)
+                    .fitCenter()
+                    .into(binding.ivMovieBackdrop);
+            Glide.with(getApplicationContext())
+                    .load(BASE_IMAGE_PATH +moviePersisted.getPosterPath())
+                    .fallback(R.drawable.ic_baseline_broken_image_24)
+                    .fitCenter()
+                    .into(binding.movieThumbnail);
+            binding.relesdeDateLabel.setText(moviePersisted.getReleaseDate());
+            binding.tvVoteAverage.setText(moviePersisted.getVoteAverage() +"/10");
+            binding.movieOverview.setText(moviePersisted.getOverview());
+        }
 
     }
 
@@ -186,12 +241,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         if (id == R.id.favorite_action) {
             if (isFavorite) {
-                item.setIcon(R.drawable.ic_baseline_favorite_border_24);
-                viewModel.unFavMovie(movie);
+                viewModel.unFavMovie(movieID);
+                isFavorite = false;
             }
             else {
-                item.setIcon(R.drawable.ic_baseline_favorite_24);
+                if (movie != null)
                 viewModel.favMovie(movie);
+                else viewModel.favMoviePersisted(moviePersisted);
             }
             return true;
         }

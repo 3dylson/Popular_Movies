@@ -1,11 +1,15 @@
 package com.example.android.popularmovies.data.detabase.entity;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "Movie")
-public class MoviePersisted {
+public class MoviePersisted implements Parcelable {
 
     @PrimaryKey()
     private int id;
@@ -31,6 +35,29 @@ public class MoviePersisted {
         this.releaseDate = releaseDate;
         this.voteAverage = voteAverage;
     }
+
+    @Ignore
+    protected MoviePersisted(Parcel in) {
+        id = in.readInt();
+        backdropPath = in.readString();
+        originalTitle = in.readString();
+        overview = in.readString();
+        posterPath = in.readString();
+        releaseDate = in.readString();
+        voteAverage = in.readDouble();
+    }
+
+    public static final Creator<MoviePersisted> CREATOR = new Creator<MoviePersisted>() {
+        @Override
+        public MoviePersisted createFromParcel(Parcel in) {
+            return new MoviePersisted(in);
+        }
+
+        @Override
+        public MoviePersisted[] newArray(int size) {
+            return new MoviePersisted[size];
+        }
+    };
 
     public int getId() {
         return id;
@@ -88,4 +115,19 @@ public class MoviePersisted {
         this.releaseDate = releaseDate;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(backdropPath);
+        dest.writeString(originalTitle);
+        dest.writeString(overview);
+        dest.writeString(posterPath);
+        dest.writeString(releaseDate);
+        dest.writeDouble(voteAverage);
+    }
 }

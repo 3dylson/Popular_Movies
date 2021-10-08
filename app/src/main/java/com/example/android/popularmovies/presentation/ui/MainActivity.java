@@ -1,33 +1,25 @@
 package com.example.android.popularmovies.presentation.ui;
 
-import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
 
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.Movie;
-import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
-import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
-import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
+import com.example.android.popularmovies.presentation.ui.fragments.FavFragment;
+import com.example.android.popularmovies.presentation.ui.fragments.PopMovieFragment;
+import com.example.android.popularmovies.presentation.ui.fragments.TopRatedFragment;
 
-import java.util.Objects;
+public class MainActivity extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnItemClickHandler {
+    private PopMovieFragment popMovieFragment;
+    private TopRatedFragment topRatedFragment;
+    private FavFragment favFragment;
 
-    private MoviesViewModel viewModel;
-    private RecyclerView recyclerView;
-    private MoviesAdapter moviesAdapter;
-    private ProgressBar progressBar;
     private MenuItem popMovieItem;
     private MenuItem topRatedItem;
     private MenuItem favItem;
@@ -37,66 +29,21 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        popMovieFragment = new PopMovieFragment();
+        topRatedFragment = new TopRatedFragment();
+        favFragment = new FavFragment();
 
-        recyclerView = findViewById(R.id.rv_movies);
-        progressBar = findViewById(R.id.pb_loading_indicator);
-
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // landscape
-            GridLayoutManager layoutManager
-                    = new GridLayoutManager(getApplicationContext(),6);
-            recyclerView.setLayoutManager(layoutManager);
-
-        } else {
-            // portrait
-            GridLayoutManager layoutManager
-                    = new GridLayoutManager(getApplicationContext(),3);
-            recyclerView.setLayoutManager(layoutManager);
-        }
-
-        recyclerView.setHasFixedSize(true);
-
-        moviesAdapter = new MoviesAdapter(this);
-
-        MoviesViewModelFactory factory = new MoviesViewModelFactory(this.getApplication());
-        viewModel = new ViewModelProvider(this,factory).get(MoviesViewModel.class);
-
-
-        viewModel.getMoviesLiveData().observe(this,movies -> {
-            moviesAdapter.submitList(movies);
-
-        });
-        recyclerView.setAdapter(moviesAdapter);
-
-
-        loadContent();
-
-        /*if (Objects.equals(viewModel.getListFilterFlag().getValue(), "popular")){
-            viewModel.loadPopMovies();
-        } else {
-            viewModel.loadTopRatedMovies();
-            //TODO change checked filter
-        }*/
+        loadFragment(popMovieFragment);
 
     }
 
-    private void loadContent() {
-        viewModel.getListFilterFlag().observe(this, string -> {
-            if (string.equals("popular")) {
-                viewModel.loadPopMovies();
-            }
-            if (string.equals("top_rated")) {
-                viewModel.loadTopRatedMovies();
-                uncheckItemMenu();
-                topRatedItem.setChecked(true);
-            }
-            if (string.equals("my_fav")) {
-                viewModel.loadMyFav();
-                uncheckItemMenu();
-                favItem.setChecked(true);
-            }
-        });
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.navigationContainer, fragment)
+                .commit();
     }
+
 
     private void uncheckItemMenu() {
         popMovieItem.setChecked(false);
@@ -104,13 +51,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         favItem.setChecked(false);
     }
 
-
-    @Override
-    public void onItemClick(Movie movie) {
-        Intent movieDetailIntent = new Intent(MainActivity.this,DetailsActivity.class);
-        movieDetailIntent.putExtra(DetailsActivity.EXTRA_MOVIE,movie);
-        startActivity(movieDetailIntent);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,19 +67,26 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         int id = item.getItemId();
 
         if (id == R.id.top_rated) {
-            viewModel.setListFilterFlag("top_rated");
+            uncheckItemMenu();
+            item.setChecked(true);
+            getSupportActionBar().setTitle("Top Rated Movies");
+            loadFragment(topRatedFragment);
             return true;
         }
 
         if (id == R.id.pop_movies) {
             uncheckItemMenu();
             item.setChecked(true);
-            viewModel.setListFilterFlag("popular");
+            getSupportActionBar().setTitle("Popular Movies");
+            loadFragment(popMovieFragment);
             return true;
         }
 
         if (id == R.id.myFav) {
-            viewModel.setListFilterFlag("my_fav");
+            uncheckItemMenu();
+            item.setChecked(true);
+            getSupportActionBar().setTitle("My Favorites Movies");
+            loadFragment(favFragment);
             return true;
         }
         return super.onOptionsItemSelected(item);

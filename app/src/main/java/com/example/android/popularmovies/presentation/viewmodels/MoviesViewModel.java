@@ -1,103 +1,67 @@
 package com.example.android.popularmovies.presentation.viewmodels;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.paging.PagedList;
 
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
-import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.data.network.MovieAPI;
 import com.example.android.popularmovies.data.network.MoviesRepository;
 import com.example.android.popularmovies.data.network.RetrofitClient;
-import com.example.android.popularmovies.data.network.cb.DataRetrieved;
-import com.example.android.popularmovies.data.network.responsemodel.MovieResponse;
+import com.example.android.popularmovies.model.Movie;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class MoviesViewModel extends AndroidViewModel implements DataRetrieved {
+public class MoviesViewModel extends AndroidViewModel {
 
     private static final String TAG = MoviesViewModel.class.getSimpleName();
 
     private final MoviesRepository repository;
     private PopMoviesDatabase database;
-    private MutableLiveData<List<Movie>> moviesLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<Movie>> favMoviesLiveData = new MutableLiveData<>();
-    private List<Movie> moviesLoaded;
-    private MutableLiveData<String> listFilterFlag = new MutableLiveData<>();
+    private final LiveData<PagedList<Movie>> pagedListPopMovie;
+    private final LiveData<PagedList<Movie>> pagedListTopRatedMovie;
+    private final MutableLiveData<List<MoviePersisted>> favMovies = new MutableLiveData<>();
 
     public MoviesViewModel(@NonNull Application application) {
         super(application);
+        MovieAPI movieAPI = RetrofitClient.apiMovie();
         database = PopMoviesDatabase.getInstance(application);
-        repository = MoviesRepository.getInstance(database.movieDao());
-        listFilterFlag.postValue("popular");
+        repository = MoviesRepository.getInstance(database.movieDao(), movieAPI);
+        pagedListPopMovie = repository.getPopMoviePagedList();
+        pagedListTopRatedMovie = repository.getTopRatedPagedList();
+        loadMyFav();
     }
 
-
-    public MutableLiveData<List<Movie>> getMoviesLiveData() {
-        return moviesLiveData;
+    public LiveData<PagedList<Movie>> getPagedListPopMovie() {
+        return pagedListPopMovie;
     }
 
-    public LiveData<String> getListFilterFlag() {
-        return listFilterFlag;
+    public LiveData<PagedList<Movie>> getPagedListTopRatedMovie() {
+        return pagedListTopRatedMovie;
     }
 
-    public void loadPopMovies() {
-        RetrofitClient.getListOfPopularMovies(this);
+    public MutableLiveData<List<MoviePersisted>> getFavMovies() {
+        return favMovies;
     }
 
-    public void loadTopRatedMovies() {
-        RetrofitClient.getListOfTopRatedMovies(this);
+    public LiveData<Integer> getLoadState() {
+        return repository.getPopMoviesLoadState();
     }
 
     public void loadMyFav() {
-        AtomicReference<List<MoviePersisted>> favMovies = new AtomicReference<>();
-
         PopMoviesDatabase
                 .databaseWriteExecutor
                 .execute(()-> {
-                    List<Movie> convertedMovies = new ArrayList<>();
-                    favMovies.set(repository.getMovies());
-                    favMovies.get().forEach(moviePersisted -> {
-                        Movie movie = new Movie(
-                                moviePersisted.getBackdropPath(),
-                                moviePersisted.getId(),
-                                moviePersisted.getOriginalTitle(),
-                                moviePersisted.getOverview(),
-                                moviePersisted.getPosterPath(),
-                                moviePersisted.getReleaseDate(),
-                                moviePersisted.getVoteAverage(),
-                                true
-                        );
-                        convertedMovies.add(movie);
-                    });
-                    moviesLoaded = convertedMovies;
-                    moviesLiveData.postValue(moviesLoaded);
+                   favMovies.postValue(repository.getFavMoviesList());
                 });
     }
 
-    public void setListFilterFlag(String value){
-        listFilterFlag.postValue(value);
-    }
-
-
-    @Override
-    public void onDataFetchedSuccess(MovieResponse response) {
-        Log.d(TAG, "onDataFetched Success | "+ response.getTotalResults() +" new movies");
-        moviesLoaded = response.getMovies();
-        moviesLiveData.postValue(moviesLoaded);
-
-    }
-
-    @Override
-    public void onDataFetchedFailed() {
-        moviesLiveData.postValue(Collections.emptyList());
-    }
 
 }
