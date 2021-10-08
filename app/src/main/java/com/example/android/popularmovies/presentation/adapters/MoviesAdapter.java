@@ -1,5 +1,7 @@
 package com.example.android.popularmovies.presentation.adapters;
 
+import static com.example.android.popularmovies.data.network.ServerValues.SUCCESS;
+
 import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -16,7 +18,14 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Movie;
 
-public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHolder> {
+public class MoviesAdapter extends PagedListAdapter<Movie, RecyclerView.ViewHolder> {
+
+    // Two view types 1st to show a loading spinner and the other to show a post
+    private static final int TYPE_LOAD = 1;
+    private static final int TYPE_MOVIE = 2;
+
+    //Loading state : ONGOING, FAILED, SUCCESS
+    private Integer state;
 
     //private List<Movie> movies;
     private final MoviesAdapterOnItemClickHandler clickHandler;
@@ -25,6 +34,10 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
     public MoviesAdapter( MoviesAdapterOnItemClickHandler clickHandler) {
         super(diffCallback);
         this.clickHandler = clickHandler;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 
     private static final DiffUtil.ItemCallback<Movie> diffCallback = new DiffUtil.ItemCallback<Movie>() {
@@ -43,28 +56,42 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
 
     @NonNull
     @Override
-    public MoviesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new MoviesViewHolder(inflater.inflate(R.layout.movies_list_items, parent, false));
+        if (viewType == TYPE_MOVIE) {
+            return new MoviesViewHolder(inflater.inflate(R.layout.movies_list_items, parent, false));
+        } else {
+            return new LoadingViewHolder(inflater.inflate(R.layout.item_loading, parent, false));
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MoviesViewHolder holder, int position) {
-        Movie currentMovie = getItem(position);
-        String imageUrl = null;
-        if (currentMovie.getPosterPath() != null) {
-            imageUrl = currentMovie.getPosterPath();
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof MoviesViewHolder) {
+            Movie currentMovie = getItem(position);
+            String imageUrl = null;
+            if (currentMovie.getPosterPath() != null) {
+                imageUrl = currentMovie.getPosterPath();
+            }
+            String BASE_POSTER_PATH = "https://image.tmdb.org/t/p/w185";
+            Glide.with(holder.itemView.getContext())
+                    .load(BASE_POSTER_PATH +imageUrl)
+                    .fallback(R.drawable.ic_baseline_broken_image_24)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .fitCenter()
+                    .into(((MoviesViewHolder) holder).poster);
         }
-        String BASE_POSTER_PATH = "https://image.tmdb.org/t/p/w185";
-        Glide.with(holder.itemView.getContext())
-                .load(BASE_POSTER_PATH +imageUrl)
-                .fallback(R.drawable.ic_baseline_broken_image_24)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .fitCenter()
-                .into(holder.poster);
     }
 
 
+    @Override
+    public int getItemViewType(int position) {
+
+        if (position == getItemCount()-1 && state != null && !state.equals(SUCCESS))
+            return TYPE_LOAD;
+        else
+            return TYPE_MOVIE;
+    }
 
     public class MoviesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -82,7 +109,7 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             Movie clickedMovie = getItem(adapterPosition);
-            clickHandler.onItemClick(clickedMovie);
+            clickHandler.onMovieClick(clickedMovie);
         }
 
     }
@@ -91,7 +118,7 @@ public class MoviesAdapter extends ListAdapter<Movie, MoviesAdapter.MoviesViewHo
      */
     public interface MoviesAdapterOnItemClickHandler {
 
-        void onItemClick(Movie movie);
+        void onMovieClick(Movie movie);
     }
 
 }

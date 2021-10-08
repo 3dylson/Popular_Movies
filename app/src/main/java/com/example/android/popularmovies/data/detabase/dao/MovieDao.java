@@ -16,19 +16,19 @@ public interface MovieDao {
 
 
     @Query("SELECT * FROM Movie")
-    List<MoviePersisted> getMovies();
+    List<MoviePersisted> getFavMovies();
 
     @Insert(onConflict = IGNORE)
-    void insert(MoviePersisted persistedMovie);
+    void insertFavMovie(MoviePersisted persistedMovie);
 
     @Query("SELECT * FROM Movie WHERE id= :id")
-    LiveData<MoviePersisted> findPersistedMovieById(String id);
+    LiveData<MoviePersisted> findFavMovieById(String id);
 
     @Query("DELETE FROM Movie WHERE id = :id")
-    void deleteById(String id);
+    void deleteFavMovieById(String id);
 
     @Query("DELETE FROM Movie")
-    void deleteAll();
+    void deleteAllFavMovie();
 
 
 }
