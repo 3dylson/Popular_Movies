@@ -17,6 +17,14 @@ import com.bumptech.glide.Glide;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Review;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewViewHolder> {
 
     private final ReviewAdapterOnItemClickHandler clickHandler;
@@ -100,7 +108,17 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
                 .into(holder.authorAvatar);
 
         holder.starRate.setRating(rateStar);
-        holder.createdAt.setText(currentReview.getCreatedAt());
+
+        SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        Date date = new Date();
+        try {
+            date = parser.parse(currentReview.createdAt);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String formattedDate = formatter.format(date);
+        holder.createdAt.setText(formattedDate);
         holder.review.setText(currentReview.getContent());
     }
 
