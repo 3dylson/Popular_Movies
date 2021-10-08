@@ -99,6 +99,7 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     public void setupAdapter() {
         moviesAdapter = new MoviesAdapter(this);
         recyclerView.setAdapter(moviesAdapter);
+        moviesAdapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
     }
 
     public void showData() {

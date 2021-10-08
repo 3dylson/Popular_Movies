@@ -222,6 +222,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onReviewFetchedSuccess(ReviewResponse response) {
         if (response.getTotalResults() > 0) {
+            reviewsAdapter.clearReviewsItems();
             binding.noReviews.setVisibility(View.INVISIBLE);
             binding.rvReviews.setVisibility(View.VISIBLE);
             reviewsAdapter.submitList(response.getReviews());

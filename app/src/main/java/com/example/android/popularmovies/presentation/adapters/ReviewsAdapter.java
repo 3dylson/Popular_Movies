@@ -152,6 +152,12 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
         }
     }
 
+    public void clearReviewsItems() {
+        getCurrentList();
+        getCurrentList().clear();
+        notifyDataSetChanged();
+    }
+
     public interface ReviewAdapterOnItemClickHandler {
         void onReviewClick(int adapterPosition);
     }

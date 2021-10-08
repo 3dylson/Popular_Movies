@@ -30,7 +30,6 @@ public class MoviesAdapter extends PagedListAdapter<Movie, RecyclerView.ViewHold
     //private List<Movie> movies;
     private final MoviesAdapterOnItemClickHandler clickHandler;
 
-
     public MoviesAdapter( MoviesAdapterOnItemClickHandler clickHandler) {
         super(diffCallback);
         this.clickHandler = clickHandler;
