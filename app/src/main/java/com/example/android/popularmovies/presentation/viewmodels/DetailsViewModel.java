@@ -15,7 +15,6 @@ import com.example.android.popularmovies.model.Movie;
 public class DetailsViewModel extends AndroidViewModel {
 
     private final MoviesRepository repository;
-    private Movie movie;
 
     public DetailsViewModel(@NonNull Application application) {
         super(application);
@@ -25,13 +24,16 @@ public class DetailsViewModel extends AndroidViewModel {
     }
 
     public void favMovie(Movie movie) {
-        this.movie = movie;
         MoviePersisted persistedMovie = movieToPersistedMovie(movie);
-        repository.insert(persistedMovie);
+        repository.addFavMovie(persistedMovie);
     }
 
-    public void unFavMovie(Movie movie) {
-        repository.deleteById(String.valueOf(movie.getId()));
+    public void favMoviePersisted(MoviePersisted movie) {
+        repository.addFavMovie(movie);
+    }
+
+    public void unFavMovie(int id) {
+        repository.deleteFavMovie(String.valueOf(id));
     }
 
     private MoviePersisted movieToPersistedMovie(Movie movie) {
