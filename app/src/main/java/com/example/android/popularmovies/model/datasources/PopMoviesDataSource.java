@@ -4,6 +4,8 @@ import static com.example.android.popularmovies.data.network.ServerValues.FAILED
 import static com.example.android.popularmovies.data.network.ServerValues.ONGOING;
 import static com.example.android.popularmovies.data.network.ServerValues.SUCCESS;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PageKeyedDataSource;
@@ -18,14 +20,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
+public class PopMoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
+
+    private static final String TAG = PopMoviesDataSource.class.getSimpleName();
 
     MovieAPI movieAPI;
 
     //A livedata which has a integer that holds the state of loading
-    MutableLiveData<Integer> loadState;
+    private MutableLiveData<Integer> loadState;
 
-    public MoviesDataSource(MovieAPI movieAPI) {
+    public PopMoviesDataSource(MovieAPI movieAPI) {
         this.movieAPI = movieAPI;
         loadState = new MutableLiveData<>();
     }
@@ -61,6 +65,8 @@ public class MoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
 
                             //setting load state so that the UI can know data fetching failed
                             loadState.postValue(FAILED);
+
+                            Log.d(TAG, "code: " + response.code());
                         }
                     }
 
@@ -73,6 +79,8 @@ public class MoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
 
                         //setting load state so that the UI can know data fetching failed
                         loadState.postValue(FAILED);
+
+                        Log.e(TAG, "Unable to get popular movies. Error: " + t.getMessage());
 
                     }
                 });
@@ -107,6 +115,7 @@ public class MoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
                         } else {
                             callback.onResult(new ArrayList<>(), currentPage);
                             loadState.postValue(FAILED);
+                            Log.d(TAG, "code: " + response.code());
                         }
                     }
 
@@ -114,6 +123,7 @@ public class MoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
                     public void onFailure(Call<MovieResponse> call, Throwable t) {
                         callback.onResult(new ArrayList<>(), currentPage);
                         loadState.postValue(FAILED);
+                        Log.e(TAG, "Unable to get popular movies. Error: " + t.getMessage());
                     }
                 });
 
@@ -122,7 +132,7 @@ public class MoviesDataSource extends PageKeyedDataSource<Integer, Movie>  {
 
 
     //UI will call this method to get the livedata of loading, subscribe to it, and update the UI state accordingly
-    public MutableLiveData<Integer> getLoadState() {
+    public MutableLiveData<Integer> getPopMovieLoadState() {
         return loadState;
     }
 }

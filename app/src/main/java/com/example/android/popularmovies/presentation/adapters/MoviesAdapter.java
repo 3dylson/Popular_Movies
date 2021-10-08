@@ -109,7 +109,7 @@ public class MoviesAdapter extends PagedListAdapter<Movie, RecyclerView.ViewHold
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             Movie clickedMovie = getItem(adapterPosition);
-            clickHandler.onItemClick(clickedMovie);
+            clickHandler.onMovieClick(clickedMovie);
         }
 
     }
@@ -118,7 +118,7 @@ public class MoviesAdapter extends PagedListAdapter<Movie, RecyclerView.ViewHold
      */
     public interface MoviesAdapterOnItemClickHandler {
 
-        void onItemClick(Movie movie);
+        void onMovieClick(Movie movie);
     }
 
 }

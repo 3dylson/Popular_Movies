@@ -3,7 +3,6 @@ package com.example.android.popularmovies.data.network;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
@@ -12,8 +11,10 @@ import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.dao.MovieDao;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 import com.example.android.popularmovies.model.Movie;
-import com.example.android.popularmovies.model.datasources.MoviesDataSource;
-import com.example.android.popularmovies.model.datasources.MoviesDataSourceFactory;
+import com.example.android.popularmovies.model.datasources.PopMoviesDataSource;
+import com.example.android.popularmovies.model.datasources.PopMoviesDataSourceFactory;
+import com.example.android.popularmovies.model.datasources.TopRatedDataSource;
+import com.example.android.popularmovies.model.datasources.TopRatedDataSourceFactory;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -26,25 +27,24 @@ public class MoviesRepository {
     private static final Object LOCK = new Object();
     private static MoviesRepository INSTANCE;
     private final MovieDao movieDao;
-    private MutableLiveData<Integer> insertResult = new MutableLiveData<>();
-    private MutableLiveData<Integer> removeResult = new MutableLiveData<>();
-    private MoviePersisted fetchedMovie;
-    private final MoviesDataSourceFactory moviesDataSourceFactory;
-    private MovieAPI movieAPI;
-    private LiveData<Integer> loadState;
+    private final PopMoviesDataSourceFactory popMoviesDataSourceFactory;
+    private final TopRatedDataSourceFactory topRatedDataSourceFactory;
+    private final LiveData<Integer> topRatedLoadState;
+    private final LiveData<Integer> popMoviesLoadState;
 
 
     public MoviesRepository(MovieDao movieDao, MovieAPI movieAPI ) {
         this.movieDao = movieDao;
-        this.movieAPI = movieAPI;
 
-        moviesDataSourceFactory = new MoviesDataSourceFactory(movieAPI);
+        popMoviesDataSourceFactory = new PopMoviesDataSourceFactory(movieAPI);
+        topRatedDataSourceFactory = new TopRatedDataSourceFactory(movieAPI);
 
-        //since we can only access MoviesDataSourceFactory which has no method
-        //to access the loading state present within MoviesDataSource
-        //we use this Transformations API which helps us to get the load state livedata from MoviesDataSource
+        //since we can only access PopMoviesDataSourceFactory which has no method
+        //to access the loading state present within PopMoviesDataSource
+        //we use this Transformations API which helps us to get the load state livedata from PopMoviesDataSource
         //which we can let other classes to access it from here by creating a getter
-        loadState = Transformations.switchMap(moviesDataSourceFactory.getMoviesDataSourceMutableLiveData(), MoviesDataSource::getLoadState);
+        popMoviesLoadState = Transformations.switchMap(popMoviesDataSourceFactory.getMoviesDataSourceMutableLiveData(), PopMoviesDataSource::getPopMovieLoadState);
+        topRatedLoadState = Transformations.switchMap(topRatedDataSourceFactory.getTopRatedDataSourceMutableLiveData(), TopRatedDataSource::getTopRatedLoadState);
     }
 
     public synchronized static MoviesRepository getInstance(MovieDao movieDao, MovieAPI movieAPI) {
@@ -56,11 +56,7 @@ public class MoviesRepository {
         return INSTANCE;
     }
 
-    public void setFilterFlag(Integer flag) {
-
-    }
-
-    public LiveData<PagedList<Movie>> getPagedList() {
+    public LiveData<PagedList<Movie>> getPopMoviePagedList() {
         //There are some parameters that we can config according to our use case
         PagedList.Config config = new PagedList.Config.Builder()
                 .setEnablePlaceholders(false)
@@ -69,68 +65,65 @@ public class MoviesRepository {
                 .setMaxSize(24) //Maximum PagedList size must be at least pageSize + 2*prefetchDist
                 .build();
 
-        return new LivePagedListBuilder<>(moviesDataSourceFactory,config)
+        return new LivePagedListBuilder<>(popMoviesDataSourceFactory,config)
                 .setFetchExecutor(Executors.newFixedThreadPool(5)) //Use five threads to do the fetching operations
                 .build();
     }
 
-    public LiveData<Integer> getLoadState() {
-        return loadState;
+    public LiveData<PagedList<Movie>> getTopRatedPagedList() {
+        PagedList.Config config = new PagedList.Config.Builder()
+                .setEnablePlaceholders(false)
+                .setPageSize(20)
+                .setPrefetchDistance(2)
+                .setMaxSize(24)
+                .build();
+
+        return new LivePagedListBuilder<>(topRatedDataSourceFactory,config)
+                .setFetchExecutor(Executors.newFixedThreadPool(5))
+                .build();
     }
 
-    public MutableLiveData<Integer> getInsertResult() {
-        return insertResult;
+    public LiveData<Integer> getTopRatedLoadState() {
+        return topRatedLoadState;
     }
 
-    public MutableLiveData<Integer> getRemoveResult() {
-        return removeResult;
+    public LiveData<Integer> getPopMoviesLoadState() {
+        return popMoviesLoadState;
     }
 
-    public List<MoviePersisted> getMovies() {
-        return movieDao.getMovies();
+    public List<MoviePersisted> getFavMoviesList() {
+        return movieDao.getFavMovies();
     }
 
-    /*public void updateMovies() {
-        PopMoviesDatabase
-                .databaseWriteExecutor
-                .execute(() -> onLoaded(movieDao.getMovies()));
-    }*/
 
-    public void deleteById(String id) {
+    public void deleteFavMovie(String id) {
         PopMoviesDatabase
                 .databaseWriteExecutor
                 .execute(() -> {
                     try {
-                        movieDao.deleteById(id);
-                        removeResult.postValue(1);
+                        movieDao.deleteFavMovieById(id);
                         Log.d(TAG,"Movie deleted as Fav");
                     } catch (Exception e) {
-                        removeResult.postValue(0);
+                        Log.d(TAG,e.getMessage());
                     }
                 });
     }
 
-    public void insert(MoviePersisted movie) {
+    public void addFavMovie(MoviePersisted movie) {
         PopMoviesDatabase
                 .databaseWriteExecutor
                 .execute(() -> {
                     try {
-                        movieDao.insert(movie);
-                        insertResult.postValue(1);
+                        movieDao.insertFavMovie(movie);
                         Log.d(TAG,"Movie marked as Fav");
                     } catch (Exception e) {
-                        insertResult.postValue(0);
+                        Log.d(TAG,e.getMessage());
                     }
                 });
     }
 
     public MoviePersisted findByID(String id) {
-        return movieDao.findPersistedMovieById(id).getValue();
+        return movieDao.findFavMovieById(id).getValue();
     }
-
-
-    /*private void onLoaded(List<MoviePersisted> movies) {
-        this.movies.postValue(movies);
-    }*/
 
 }
