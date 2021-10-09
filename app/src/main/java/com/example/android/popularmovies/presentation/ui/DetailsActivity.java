@@ -71,6 +71,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         initFavCheck();
         bindMovieToUI();
 
+        binding.topDetailsAppBar.getMenu().findItem(R.id.share_action).setEnabled(false);
         binding.topDetailsAppBar.setOnMenuItemClickListener(this::onMenuItemClick);
 
         apiCallTrailerAndReview();
@@ -184,6 +185,15 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+    private Intent shareYouTubeURLIntent(Trailer trailer) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "https://www.youtube.com/watch?v="+trailer.getKey()+ "\n"+"Check out this movie trailer :)");
+        sendIntent.setType("text/plain");
+
+        return Intent.createChooser(sendIntent,getResources().getString(R.string.app_name));
+    }
+
 
     @Override
     public void onClick(View v) {
@@ -204,6 +214,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             binding.noTrailers.setVisibility(View.INVISIBLE);
             binding.trailersRv.setVisibility(View.VISIBLE);
             trailersAdapter.submitList(response.getTrailers());
+            binding.topDetailsAppBar.getMenu().findItem(R.id.share_action).setIntent(shareYouTubeURLIntent(response.getTrailers().get(0)));
+            binding.topDetailsAppBar.getMenu().findItem(R.id.share_action).setEnabled(true);
         }
         else {
             binding.trailersRv.setVisibility(View.INVISIBLE);
