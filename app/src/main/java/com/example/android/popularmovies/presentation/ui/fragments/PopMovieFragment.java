@@ -92,7 +92,7 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
                 showLoading();
             }
         });
-        viewModel.getLoadState().observe(this.getViewLifecycleOwner(), state -> moviesAdapter.setState(state));
+        viewModel.getPopLoadState().observe(this.getViewLifecycleOwner(), state -> moviesAdapter.setState(state));
     }
 
 

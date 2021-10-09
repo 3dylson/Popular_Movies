@@ -14,6 +14,6 @@ public class TopRatedFragment extends PopMovieFragment{
                 showLoading();
             }
         });
-        getViewModel().getLoadState().observe(this.getViewLifecycleOwner(), state -> getMoviesAdapter().setState(state));
+        getViewModel().getTopLoadState().observe(this.getViewLifecycleOwner(), state -> getMoviesAdapter().setState(state));
     }
 }

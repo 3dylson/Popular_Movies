@@ -21,10 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class MoviesViewModel extends AndroidViewModel {
 
-    private static final String TAG = MoviesViewModel.class.getSimpleName();
-
     private final MoviesRepository repository;
-    private PopMoviesDatabase database;
     private final LiveData<PagedList<Movie>> pagedListPopMovie;
     private final LiveData<PagedList<Movie>> pagedListTopRatedMovie;
     private final MutableLiveData<List<MoviePersisted>> favMovies = new MutableLiveData<>();
@@ -32,7 +29,7 @@ public class MoviesViewModel extends AndroidViewModel {
     public MoviesViewModel(@NonNull Application application) {
         super(application);
         MovieAPI movieAPI = RetrofitClient.apiMovie();
-        database = PopMoviesDatabase.getInstance(application);
+        PopMoviesDatabase database = PopMoviesDatabase.getInstance(application);
         repository = MoviesRepository.getInstance(database.movieDao(), movieAPI);
         pagedListPopMovie = repository.getPopMoviePagedList();
         pagedListTopRatedMovie = repository.getTopRatedPagedList();
@@ -51,8 +48,12 @@ public class MoviesViewModel extends AndroidViewModel {
         return favMovies;
     }
 
-    public LiveData<Integer> getLoadState() {
+    public LiveData<Integer> getPopLoadState() {
         return repository.getPopMoviesLoadState();
+    }
+
+    public LiveData<Integer> getTopLoadState() {
+        return repository.getTopRatedLoadState();
     }
 
     public void loadMyFav() {
