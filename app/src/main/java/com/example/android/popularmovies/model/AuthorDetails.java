@@ -17,10 +17,6 @@ public class AuthorDetails {
         return name;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public String getAvatarPath() {
         return avatarPath;
     }

@@ -3,9 +3,7 @@ package com.example.android.popularmovies.presentation.ui.fragments;
 
 import android.content.Intent;
 import android.view.View;
-import android.widget.TextView;
 
-import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
 import com.example.android.popularmovies.presentation.adapters.FavAdapter;
 import com.example.android.popularmovies.presentation.ui.DetailsActivity;

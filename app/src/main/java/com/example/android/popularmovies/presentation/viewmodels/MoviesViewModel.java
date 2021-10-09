@@ -15,9 +15,7 @@ import com.example.android.popularmovies.data.network.MoviesRepository;
 import com.example.android.popularmovies.data.network.RetrofitClient;
 import com.example.android.popularmovies.model.Movie;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class MoviesViewModel extends AndroidViewModel {
 

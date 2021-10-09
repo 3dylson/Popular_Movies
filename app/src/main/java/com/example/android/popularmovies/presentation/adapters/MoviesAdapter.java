@@ -27,7 +27,6 @@ public class MoviesAdapter extends PagedListAdapter<Movie, RecyclerView.ViewHold
     //Loading state : ONGOING, FAILED, SUCCESS
     private Integer state;
 
-    //private List<Movie> movies;
     private final MoviesAdapterOnItemClickHandler clickHandler;
 
     public MoviesAdapter( MoviesAdapterOnItemClickHandler clickHandler) {
@@ -106,14 +105,14 @@ public class MoviesAdapter extends PagedListAdapter<Movie, RecyclerView.ViewHold
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
+            int adapterPosition = getBindingAdapterPosition();
             Movie clickedMovie = getItem(adapterPosition);
             clickHandler.onMovieClick(clickedMovie);
         }
 
     }
     /**
-     * The interface that receives onItemClick messages.
+     * The interface that receives onTrailerClick messages.
      */
     public interface MoviesAdapterOnItemClickHandler {
 

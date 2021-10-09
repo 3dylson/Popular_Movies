@@ -104,10 +104,6 @@ public class Movie implements Parcelable {
         return releaseDate;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
     public String getBackdropPath() {
         return backdropPath;
     }
@@ -116,13 +112,6 @@ public class Movie implements Parcelable {
         return voteAverage;
     }
 
-    public boolean isFav() {
-        return fav;
-    }
-
-    public void setFav(boolean fav) {
-        this.fav = fav;
-    }
 
     @Override
     public int describeContents() {

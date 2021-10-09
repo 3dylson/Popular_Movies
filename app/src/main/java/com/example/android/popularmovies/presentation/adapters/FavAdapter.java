@@ -73,7 +73,7 @@ public class FavAdapter extends ListAdapter<MoviePersisted, FavAdapter.FavViewHo
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
+            int adapterPosition = getBindingAdapterPosition();
             MoviePersisted clickedMovie = getItem(adapterPosition);
             clickHandler.onFavMovieCLick(clickedMovie);
         }

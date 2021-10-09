@@ -19,10 +19,6 @@ import com.example.android.popularmovies.model.Review;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewViewHolder> {
@@ -112,7 +108,7 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
         SimpleDateFormat parser=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Date date = new Date();
         try {
-            date = parser.parse(currentReview.createdAt);
+            date = parser.parse(currentReview.getCreatedAt());
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -146,7 +142,7 @@ public class ReviewsAdapter extends ListAdapter<Review, ReviewsAdapter.ReviewVie
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
+            int adapterPosition = getBindingAdapterPosition();
             clickHandler.onReviewClick(adapterPosition);
 
         }

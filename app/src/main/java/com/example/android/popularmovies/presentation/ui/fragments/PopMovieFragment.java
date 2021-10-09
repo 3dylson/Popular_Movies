@@ -61,28 +61,28 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
 
     }
 
-    public ProgressBar getProgressBar() {
+    ProgressBar getProgressBar() {
         return progressBar;
     }
 
-    public TextView getEmptyLabel() {
+    TextView getEmptyLabel() {
         return emptyLabel;
     }
 
-    public RecyclerView getRecyclerView() {
+    RecyclerView getRecyclerView() {
         return recyclerView;
     }
 
-    public MoviesAdapter getMoviesAdapter() {
+    MoviesAdapter getMoviesAdapter() {
         return moviesAdapter;
     }
 
-    public MoviesViewModel getViewModel() {
+    MoviesViewModel getViewModel() {
         return viewModel;
     }
 
 
-    public void loadData() {
+    void loadData() {
         viewModel.getPagedListPopMovie().observe(this.getViewLifecycleOwner(), movies -> {
             if (movies != null) {
                 showData();
@@ -96,18 +96,18 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     }
 
 
-    public void setupAdapter() {
+    void setupAdapter() {
         moviesAdapter = new MoviesAdapter(this);
         recyclerView.setAdapter(moviesAdapter);
         moviesAdapter.setStateRestorationPolicy(RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY);
     }
 
-    public void showData() {
+    void showData() {
         progressBar.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
-    public void showLoading() {
+    void showLoading() {
         recyclerView.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
     }

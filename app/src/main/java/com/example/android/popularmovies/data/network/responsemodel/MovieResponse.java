@@ -20,7 +20,4 @@ public class MovieResponse {
         return movies;
     }
 
-    public int getTotalResults() {
-        return totalResults;
-    }
 }

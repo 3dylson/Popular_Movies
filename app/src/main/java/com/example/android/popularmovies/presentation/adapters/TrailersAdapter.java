@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Trailer;
 
@@ -77,14 +76,14 @@ public class TrailersAdapter extends ListAdapter<Trailer, TrailersAdapter.Traile
 
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
+            int adapterPosition = getBindingAdapterPosition();
             Trailer clickedTrailer = getItem(adapterPosition);
-            clickHandler.onItemClick(clickedTrailer);
+            clickHandler.onTrailerClick(clickedTrailer);
         }
     }
 
     public interface TrailerAdapterOnItemClickHandler {
-        void onItemClick(Trailer trailer);
+        void onTrailerClick(Trailer trailer);
     }
 
 }

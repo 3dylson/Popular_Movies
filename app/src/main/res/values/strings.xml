@@ -1,17 +1,21 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+
+    <!--Actions-->
     <string name="top_rated_action">Top Rated</string>
     <string name="popularity_action">Popularity</string>
-    <string name="filter_label">Filter</string>
     <string name="favorite_action">Favorite</string>
+    <string name="share_action">Share</string>
+
+    <!--Labels-->
+    <string name="filter_label">Filter</string>
     <string name="about_this_movie_label">About this movie</string>
     <string name="trailers">Trailers</string>
     <string name="reviews_label">Reviews</string>
     <string name="my_favorites_label">My Favorites</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="your_favorite_list_is_empty_label">Your Favorite list is empty!</string>
     <string name="no_trailers_found_label">No trailers found</string>
     <string name="no_reviews_yet_label">No reviews yet</string>
-    <string name="share_action">Share</string>
+    <string name="calendar_label">📅</string>
+    <string name="star_label">⭐</string>
 </resources>

@@ -201,7 +201,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void onItemClick(Trailer trailer) {
+    public void onTrailerClick(Trailer trailer) {
         Intent playTrailerIntent = new Intent(Intent.ACTION_VIEW);
         playTrailerIntent.setData(Uri.parse("https://www.youtube.com/watch?v="+trailer.getKey()));
         startActivity(playTrailerIntent);

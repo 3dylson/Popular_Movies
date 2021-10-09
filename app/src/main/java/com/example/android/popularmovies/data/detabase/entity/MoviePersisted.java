@@ -14,17 +14,17 @@ public class MoviePersisted implements Parcelable {
     @PrimaryKey()
     private int id;
     @ColumnInfo(name = "backdrop_path")
-    private String backdropPath;
+    private final String backdropPath;
     @ColumnInfo(name = "original_title")
-    private String originalTitle;
+    private final String originalTitle;
     @ColumnInfo(name = "overview")
-    private String overview;
+    private final String overview;
     @ColumnInfo(name = "poster_path")
-    private String posterPath;
+    private final String posterPath;
     @ColumnInfo(name = "release_date")
-    private String releaseDate;
+    private final String releaseDate;
     @ColumnInfo(name = "vote_average")
-    private double voteAverage;
+    private final double voteAverage;
 
     public MoviePersisted(int id, String backdropPath, String originalTitle, String overview, String posterPath, String releaseDate, double voteAverage) {
         this.id = id;
@@ -87,32 +87,8 @@ public class MoviePersisted implements Parcelable {
         return backdropPath;
     }
 
-    public void setBackdropPath(String backdropPath) {
-        this.backdropPath = backdropPath;
-    }
-
-    public void setVoteAverage(double voteAverage) {
-        this.voteAverage = voteAverage;
-    }
-
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setOriginalTitle(String originalTitle) {
-        this.originalTitle = originalTitle;
-    }
-
-    public void setOverview(String overview) {
-        this.overview = overview;
-    }
-
-    public void setPosterPath(String posterPath) {
-        this.posterPath = posterPath;
-    }
-
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
     }
 
     @Override
