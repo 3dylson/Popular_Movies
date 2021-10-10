@@ -22,16 +22,20 @@ public class FavFragment extends PopMovieFragment implements FavAdapter.FavAdapt
     public void loadData() {
         getViewModel().getFavMovies().observe(this.getViewLifecycleOwner(), favMovies -> {
             if (favMovies != null && favMovies.size() != 0) {
-                getEmptyLabel().setVisibility(View.INVISIBLE);
-                showData();
                 favAdapter.submitList(favMovies);
+                showData();
             }
             else {
-                getProgressBar().setVisibility(View.INVISIBLE);
-                getEmptyLabel().setVisibility(View.VISIBLE);
-                getRecyclerView().setVisibility(View.INVISIBLE);
+                showEmptyFav();
             }
         });
+    }
+
+    private void showEmptyFav() {
+        getErrorLabel().setVisibility(View.INVISIBLE);
+        getProgressBar().setVisibility(View.INVISIBLE);
+        getRecyclerView().setVisibility(View.INVISIBLE);
+        getEmptyLabel().setVisibility(View.VISIBLE);
     }
 
 

@@ -18,4 +18,5 @@
     <string name="no_reviews_yet_label">No reviews yet</string>
     <string name="calendar_label">📅</string>
     <string name="star_label">⭐</string>
+    <string name="oops_something_went_wrong_label">Oops, something went wrong! :(</string>
 </resources>

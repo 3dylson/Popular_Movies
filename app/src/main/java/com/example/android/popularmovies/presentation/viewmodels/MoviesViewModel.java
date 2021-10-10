@@ -1,12 +1,14 @@
 package com.example.android.popularmovies.presentation.viewmodels;
 
 import android.app.Application;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PagedList;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.android.popularmovies.data.detabase.PopMoviesDatabase;
 import com.example.android.popularmovies.data.detabase.entity.MoviePersisted;
@@ -57,9 +59,7 @@ public class MoviesViewModel extends AndroidViewModel {
     public void loadMyFav() {
         PopMoviesDatabase
                 .databaseWriteExecutor
-                .execute(()-> {
-                   favMovies.postValue(repository.getFavMoviesList());
-                });
+                .execute(()-> favMovies.postValue(repository.getFavMoviesList()));
     }
 
 

@@ -3,6 +3,11 @@ package com.example.android.popularmovies.presentation.ui.fragments;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,18 +16,18 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.data.network.ServerValues;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.presentation.adapters.MoviesAdapter;
 import com.example.android.popularmovies.presentation.ui.DetailsActivity;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModel;
 import com.example.android.popularmovies.presentation.viewmodels.MoviesViewModelFactory;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAdapterOnItemClickHandler{
@@ -32,7 +37,7 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     private RecyclerView recyclerView;
     private MoviesAdapter moviesAdapter;
     private ProgressBar progressBar;
-    private TextView emptyLabel;
+    private TextView emptyLabel, errorLabel;
 
 
     public PopMovieFragment() {
@@ -54,11 +59,16 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
         recyclerView = requireView().findViewById(R.id.rv_movies);
         progressBar = requireView().findViewById(R.id.pb_loading_indicator);
         emptyLabel = requireView().findViewById(R.id.empty_label);
+        errorLabel = requireView().findViewById(R.id.error_label);
         showLoading();
         initRecyclerView();
         setupAdapter();
         loadData();
 
+    }
+
+    TextView getErrorLabel() {
+        return errorLabel;
     }
 
     ProgressBar getProgressBar() {
@@ -85,14 +95,19 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     void loadData() {
         viewModel.getPagedListPopMovie().observe(this.getViewLifecycleOwner(), movies -> {
             if (movies != null) {
-                showData();
                 moviesAdapter.submitList(movies);
+                showData();
             }
             else {
                 showLoading();
             }
         });
-        viewModel.getPopLoadState().observe(this.getViewLifecycleOwner(), state -> moviesAdapter.setState(state));
+        viewModel.getPopLoadState().observe(this.getViewLifecycleOwner(), state -> {
+            moviesAdapter.setState(state);
+            if (state.equals(ServerValues.FAILED) && moviesAdapter.getItemCount() == 0) {
+                showError();
+            }
+        });
     }
 
 
@@ -103,13 +118,24 @@ public class PopMovieFragment extends Fragment implements MoviesAdapter.MoviesAd
     }
 
     void showData() {
+        emptyLabel.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.INVISIBLE);
+        errorLabel.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
     void showLoading() {
+        emptyLabel.setVisibility(View.INVISIBLE);
         recyclerView.setVisibility(View.INVISIBLE);
+        errorLabel.setVisibility(View.INVISIBLE);
         progressBar.setVisibility(View.VISIBLE);
+    }
+
+    void showError() {
+        emptyLabel.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
+        errorLabel.setVisibility(View.VISIBLE);
     }
 
 

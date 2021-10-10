@@ -31,4 +31,14 @@
         android:textStyle="italic"
         android:visibility="invisible" />
 
+    <TextView
+        android:id="@+id/error_label"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="@string/oops_something_went_wrong_label"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textStyle="italic"
+        android:visibility="invisible" />
+
 </FrameLayout>

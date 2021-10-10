@@ -36,10 +36,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        viewModel = new MainViewModel();
         popMovieFragment = new PopMovieFragment();
         topRatedFragment = new TopRatedFragment();
         favFragment = new FavFragment();
+        viewModel = new MainViewModel();
 
         if (savedInstanceState != null) {
             viewModel.getOptionsMenuCreated().observe(this, flag -> {
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         popMovieItem = menu.findItem(R.id.pop_movies);
         topRatedItem = menu.findItem(R.id.top_rated);
         favItem = menu.findItem(R.id.myFav);
+        //To avoid null pointer exception
         viewModel.getOptionsMenuCreated().setValue(true);
         return true;
     }
