@@ -1,5 +1,4 @@
 # Popular Movies (Udacity)
-Academia Android
 
 ## Setup
 
